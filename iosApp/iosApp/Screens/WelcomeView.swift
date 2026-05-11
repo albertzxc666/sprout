@@ -26,17 +26,17 @@ struct WelcomeView: View {
                     FeatureRow(
                         emoji: "📚",
                         title: "Пространства и карточки",
-                        body: "Создавайте пространство для каждого языка и наполняйте его карточками — парами слов на двух языках"
+                        subtitle: "Создавайте пространство для каждого языка и наполняйте его карточками — парами слов на двух языках"
                     )
                     FeatureRow(
                         emoji: "📖",
                         title: "Учим по интервалам",
-                        body: "Каждое слово возвращается ровно тогда, когда его пора повторить — память работает лучше"
+                        subtitle: "Каждое слово возвращается ровно тогда, когда его пора повторить — память работает лучше"
                     )
                     FeatureRow(
                         emoji: "🌱",
                         title: "Сад слов",
-                        body: "Выученные слова прорастают и со временем превращаются в деревья"
+                        subtitle: "Выученные слова прорастают и со временем превращаются в деревья"
                     )
                 }
                 .frame(maxWidth: 360)
@@ -69,7 +69,7 @@ struct WelcomeView: View {
 private struct FeatureRow: View {
     let emoji: String
     let title: String
-    let body: String
+    let subtitle: String
 
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
@@ -83,7 +83,7 @@ private struct FeatureRow: View {
                 Text(title)
                     .font(.headline)
                     .foregroundColor(AppPalette.textPrimary)
-                Text(body)
+                Text(subtitle)
                     .font(.subheadline)
                     .foregroundColor(AppPalette.textSecondary)
             }

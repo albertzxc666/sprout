@@ -4,11 +4,11 @@ import Shared
 /// Thin facade over Kotlin Koin: every shared ViewModel is resolved here.
 enum DI {
     static func spaceListViewModel() -> SpaceListViewModel {
-        return KoinHelper.shared.koin.getSpaceListViewModel()
+        return KoinHelper.shared.getSpaceListViewModel()
     }
 
     static func cardListViewModel(spaceId: Int64) -> CardListViewModel {
-        return KoinHelper.shared.koin.getCardListViewModel(spaceId: spaceId)
+        return KoinHelper.shared.getCardListViewModel(spaceId: spaceId)
     }
 
     static func studyViewModel(
@@ -16,7 +16,7 @@ enum DI {
         direction: StudyDirection,
         mode: StudyMode
     ) -> StudyViewModel {
-        return KoinHelper.shared.koin.getStudyViewModel(
+        return KoinHelper.shared.getStudyViewModel(
             spaceId: spaceId,
             direction: direction,
             mode: mode
@@ -24,10 +24,10 @@ enum DI {
     }
 
     static func gardenViewModel(spaceId: Int64) -> GardenViewModel {
-        return KoinHelper.shared.koin.getGardenViewModel(spaceId: spaceId)
+        return KoinHelper.shared.getGardenViewModel(spaceId: spaceId)
     }
 
     static func preferences() -> Preferences {
-        return KoinHelper.shared.koin.getPreferences()
+        return KoinHelper.shared.getPreferences()
     }
 }
