@@ -14,11 +14,13 @@ import org.koin.core.parameter.parametersOf
 object KoinHelper {
     val shared: KoinHelper get() = this
 
+    private lateinit var koinInstance: Koin
+
     fun start() {
-        initKoinShared()
+        koinInstance = initKoinShared().koin
     }
 
-    val koin: Koin get() = org.koin.core.context.GlobalContext.get()
+    val koin: Koin get() = koinInstance
 
     fun getSpaceListViewModel(): SpaceListViewModel = koin.get()
 
