@@ -34,7 +34,9 @@ workflows:
         script: |
           cd $CM_BUILD_DIR
           if [ ! -f gradlew ]; then
-            gradle wrapper --gradle-version 8.10 --distribution-type all
+            curl -fsSL https://services.gradle.org/distributions/gradle-8.10-bin.zip -o /tmp/gradle.zip
+            unzip -q /tmp/gradle.zip -d /tmp
+            /tmp/gradle-8.10/bin/gradle wrapper --gradle-version 8.10 --distribution-type all
           fi
           chmod +x ./gradlew
           ./gradlew --version
