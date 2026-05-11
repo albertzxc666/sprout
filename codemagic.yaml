@@ -45,11 +45,6 @@ workflows:
         script: |
           cd $CM_BUILD_DIR/iosApp
           xcodegen generate
-      - name: Compile Kotlin/Native framework
-        script: |
-          cd $CM_BUILD_DIR
-          ./gradlew :shared:embedAndSignAppleFrameworkForXcode \
-            -Pkotlin.native.cacheKind=none
       - name: Build unsigned .ipa
         script: |
           cd $CM_BUILD_DIR/iosApp
