@@ -1,0 +1,36 @@
+CREATE TABLE StudyResult (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    cardId INTEGER NOT NULL,
+    correct INTEGER NOT NULL,
+    timestamp INTEGER NOT NULL,
+    FOREIGN KEY (cardId) REFERENCES Card(id) ON DELETE CASCADE
+);
+
+CREATE INDEX result_card_idx ON StudyResult(cardId);
+
+selectBySpace:
+SELECT sr.id, sr.cardId, sr.correct, sr.timestamp
+FROM StudyResult sr
+INNER JOIN Card c ON c.id = sr.cardId
+WHERE c.spaceId = ?
+ORDER BY sr.timestamp DESC;
+
+selectByCard:
+SELECT *
+FROM StudyResult
+WHERE cardId = ?
+ORDER BY timestamp DESC;
+
+selectAllWithSpace:
+SELECT sr.cardId, c.spaceId, sr.correct, sr.timestamp
+FROM StudyResult sr
+INNER JOIN Card c ON c.id = sr.cardId
+ORDER BY sr.timestamp DESC;
+
+insert:
+INSERT INTO StudyResult(cardId, correct, timestamp)
+VALUES (?, ?, ?);
+
+deleteByCard:
+DELETE FROM StudyResult
+WHERE cardId = ?;

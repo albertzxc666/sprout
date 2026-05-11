@@ -1,0 +1,28 @@
+CREATE TABLE Space (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    nativeLang TEXT NOT NULL,
+    targetLang TEXT NOT NULL,
+    createdAt INTEGER NOT NULL
+);
+
+selectAll:
+SELECT *
+FROM Space
+ORDER BY createdAt DESC;
+
+selectById:
+SELECT *
+FROM Space
+WHERE id = ?;
+
+insert:
+INSERT INTO Space(name, nativeLang, targetLang, createdAt)
+VALUES (?, ?, ?, ?);
+
+deleteById:
+DELETE FROM Space
+WHERE id = ?;
+
+lastInsertedId:
+SELECT last_insert_rowid();

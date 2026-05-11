@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:claude.ai)",
+      "Bash(dir \"c:\\\\Users\\\\ALBERT\\\\Desktop\\\\TransCard\")",
+      "Bash(gradle --version)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs"
+    ]
+  }
+}

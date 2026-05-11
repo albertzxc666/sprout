@@ -1,0 +1,84 @@
+CREATE TABLE Card (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    spaceId INTEGER NOT NULL,
+    nativeWord TEXT NOT NULL,
+    targetWord TEXT NOT NULL,
+    hint TEXT,
+    intervalDays REAL NOT NULL DEFAULT 0,
+    easiness REAL NOT NULL DEFAULT 2.5,
+    repetitions INTEGER NOT NULL DEFAULT 0,
+    nextReviewAt INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY (spaceId) REFERENCES Space(id) ON DELETE CASCADE
+);
+
+CREATE INDEX card_space_idx ON Card(spaceId);
+CREATE INDEX card_due_idx ON Card(spaceId, nextReviewAt);
+
+selectBySpace:
+SELECT *
+FROM Card
+WHERE spaceId = ?
+ORDER BY id ASC;
+
+selectById:
+SELECT *
+FROM Card
+WHERE id = ?;
+
+selectDueBySpace:
+SELECT *
+FROM Card
+WHERE spaceId = ? AND nextReviewAt <= :now
+ORDER BY nextReviewAt ASC;
+
+countBySpace:
+SELECT COUNT(*)
+FROM Card
+WHERE spaceId = ?;
+
+countAllBySpace:
+SELECT spaceId, COUNT(*) AS cnt
+FROM Card
+GROUP BY spaceId;
+
+countDueAllBySpace:
+SELECT spaceId, COUNT(*) AS cnt
+FROM Card
+WHERE nextReviewAt <= :now
+GROUP BY spaceId;
+
+countDueAll:
+SELECT COUNT(*)
+FROM Card
+WHERE nextReviewAt <= :now;
+
+selectGardenStages:
+SELECT spaceId,
+    CASE
+        WHEN repetitions < 1 THEN 0
+        WHEN repetitions < 3 THEN 1
+        WHEN repetitions < 5 THEN 2
+        WHEN repetitions < 8 THEN 3
+        ELSE 4
+    END AS stage,
+    COUNT(*) AS cnt
+FROM Card
+GROUP BY spaceId, stage;
+
+insert:
+INSERT INTO Card(spaceId, nativeWord, targetWord, hint)
+VALUES (?, ?, ?, ?);
+
+update:
+UPDATE Card
+SET nativeWord = ?, targetWord = ?, hint = ?
+WHERE id = ?;
+
+updateSrs:
+UPDATE Card
+SET intervalDays = ?, easiness = ?, repetitions = ?, nextReviewAt = ?
+WHERE id = ?;
+
+deleteById:
+DELETE FROM Card
+WHERE id = ?;

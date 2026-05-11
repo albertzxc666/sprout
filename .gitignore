@@ -1,0 +1,26 @@
+# Gradle / build artifacts
+.gradle/
+build/
+**/build/
+out/
+.idea/
+*.iml
+
+# Local environment (contains SDK paths and API keys — do not commit)
+local.properties
+*.local.properties
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Xcode (when iosApp.xcodeproj exists)
+xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+
+# Kotlin / KMP
+.kotlin/
+
+# Logs
+*.log

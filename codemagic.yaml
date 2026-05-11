@@ -1,0 +1,68 @@
+workflows:
+  ios-debug-ipa:
+    name: Sprout iOS (debug ipa, unsigned)
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      vars:
+        XCODE_PROJECT: "iosApp/iosApp.xcodeproj"
+        XCODE_SCHEME: "iosApp"
+        BUNDLE_ID: "com.transcard.ios"
+      xcode: latest
+      cocoapods: default
+    cache:
+      cache_paths:
+        - ~/.gradle/caches
+        - ~/Library/Caches/Homebrew
+    triggering:
+      events:
+        - push
+        - tag
+      branch_patterns:
+        - pattern: "main"
+          include: true
+        - pattern: "ios-build"
+          include: true
+    scripts:
+      - name: Set up Yandex API key
+        script: |
+          if [ -n "$YANDEX_DICT_KEY" ]; then
+            echo "yandex.dict.key=$YANDEX_DICT_KEY" >> $CM_BUILD_DIR/local.properties
+          fi
+          echo "sdk.dir=$ANDROID_SDK_ROOT" >> $CM_BUILD_DIR/local.properties || true
+      - name: Install XcodeGen
+        script: |
+          brew install xcodegen
+      - name: Generate Xcode project
+        script: |
+          cd $CM_BUILD_DIR/iosApp
+          xcodegen generate
+      - name: Compile Kotlin/Native framework
+        script: |
+          cd $CM_BUILD_DIR
+          ./gradlew :shared:embedAndSignAppleFrameworkForXcode \
+            -Pkotlin.native.cacheKind=none
+      - name: Build unsigned .ipa
+        script: |
+          cd $CM_BUILD_DIR/iosApp
+          xcodebuild -project iosApp.xcodeproj \
+            -scheme iosApp \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            ONLY_ACTIVE_ARCH=NO \
+            clean build
+      - name: Package .ipa
+        script: |
+          cd $CM_BUILD_DIR/iosApp/build/Build/Products/Release-iphoneos
+          mkdir -p Payload
+          cp -R iosApp.app Payload/
+          zip -qr $CM_BUILD_DIR/Sprout.ipa Payload
+          rm -rf Payload
+    artifacts:
+      - Sprout.ipa
+      - iosApp/build/Build/Products/Release-iphoneos/iosApp.app
+      - shared/build/reports/**/*
