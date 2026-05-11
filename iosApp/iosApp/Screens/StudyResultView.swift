@@ -8,6 +8,7 @@ struct StudyResultView: View {
     let correct: Int
     let total: Int
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var router: AppRouter
 
     private var percent: Int {
         total == 0 ? 0 : Int((Double(correct) / Double(total)) * 100.0)
@@ -55,8 +56,7 @@ struct StudyResultView: View {
                 }
 
                 Button {
-                    // Pop to root
-                    NotificationCenter.default.post(name: .popToRoot, object: nil)
+                    router.popToRoot()
                 } label: {
                     Text("На главную")
                         .frame(maxWidth: .infinity)
@@ -75,6 +75,3 @@ struct StudyResultView: View {
     }
 }
 
-extension Notification.Name {
-    static let popToRoot = Notification.Name("popToRoot")
-}

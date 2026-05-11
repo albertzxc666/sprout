@@ -1,5 +1,6 @@
 package com.transcard.ios
 
+import com.transcard.data.api.YandexDictionaryApi
 import com.transcard.data.preferences.Preferences
 import com.transcard.di.initKoin as initKoinShared
 import com.transcard.domain.model.StudyDirection
@@ -37,4 +38,6 @@ object KoinHelper {
         koin.get { parametersOf(spaceId) }
 
     fun getPreferences(): Preferences = koin.get()
+
+    fun isYandexConfigured(): Boolean = koin.get<YandexDictionaryApi>().isConfigured
 }

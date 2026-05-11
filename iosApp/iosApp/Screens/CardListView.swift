@@ -270,25 +270,35 @@ private struct SuggestionsBlock: View {
         fromDictionary.contains { $0.source == .onlineDictionary }
     }
 
+    private var yandexConfigured: Bool {
+        KoinHelper.shared.isYandexConfigured()
+    }
+
     var body: some View {
-        if !fromCards.isEmpty || !fromDictionary.isEmpty {
-            VStack(alignment: .leading, spacing: 8) {
-                if !fromCards.isEmpty {
-                    SuggestionGroup(
-                        label: "Из ваших карточек",
-                        items: fromCards,
-                        onPick: onPick
-                    )
-                }
-                if !fromDictionary.isEmpty {
-                    SuggestionGroup(
-                        label: "Из словаря",
-                        items: fromDictionary,
-                        onPick: onPick
-                    )
-                }
-                if hasOnline {
-                    Text("Реализовано с помощью сервиса «Яндекс.Словарь»")
+        VStack(alignment: .leading, spacing: 8) {
+            if !fromCards.isEmpty {
+                SuggestionGroup(
+                    label: "Из ваших карточек",
+                    items: fromCards,
+                    onPick: onPick
+                )
+            }
+            if !fromDictionary.isEmpty {
+                SuggestionGroup(
+                    label: "Из словаря",
+                    items: fromDictionary,
+                    onPick: onPick
+                )
+            }
+            if hasOnline {
+                Text("Реализовано с помощью сервиса «Яндекс.Словарь»")
+                    .font(.caption2)
+                    .foregroundColor(AppPalette.textSecondary)
+            }
+            if !yandexConfigured {
+                HStack(spacing: 6) {
+                    Text("🔑")
+                    Text("Онлайн-словарь не настроен в этой сборке")
                         .font(.caption2)
                         .foregroundColor(AppPalette.textSecondary)
                 }

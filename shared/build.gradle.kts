@@ -26,6 +26,11 @@ val generateSproutConfig = tasks.register("generateSproutConfig") {
     outputs.dir(outDir)
     inputs.property("yandexKey", yandexDictKey)
     doLast {
+        if (yandexDictKey.isEmpty()) {
+            logger.warn("[Sprout] Yandex Dict key is EMPTY — online translations will not work in this build.")
+        } else {
+            logger.lifecycle("[Sprout] Yandex Dict key configured (length: ${yandexDictKey.length}).")
+        }
         val pkg = File(outDir, "com/transcard/config")
         pkg.mkdirs()
         File(pkg, "Config.kt").writeText(

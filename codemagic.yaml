@@ -28,6 +28,10 @@ workflows:
         script: |
           if [ -n "$YANDEX_DICT_KEY" ]; then
             echo "yandex.dict.key=$YANDEX_DICT_KEY" >> $CM_BUILD_DIR/local.properties
+            KEY_LEN=${#YANDEX_DICT_KEY}
+            echo "Yandex key present in env (length: $KEY_LEN). Written to local.properties."
+          else
+            echo "WARN: YANDEX_DICT_KEY env var is empty — online translations will NOT work in the .ipa."
           fi
           echo "sdk.dir=$ANDROID_SDK_ROOT" >> $CM_BUILD_DIR/local.properties || true
       - name: Generate Gradle wrapper
