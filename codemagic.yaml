@@ -63,11 +63,17 @@ workflows:
       - name: Package .ipa
         script: |
           cd $CM_BUILD_DIR/iosApp/build/Build/Products/Release-iphoneos
+          APP_DIR=$(ls -d *.app | head -n 1)
+          if [ -z "$APP_DIR" ]; then
+            echo "No .app found in build output"
+            exit 1
+          fi
+          echo "Packaging $APP_DIR into Sprout.ipa"
           mkdir -p Payload
-          cp -R iosApp.app Payload/
+          cp -R "$APP_DIR" Payload/
           zip -qr $CM_BUILD_DIR/Sprout.ipa Payload
           rm -rf Payload
     artifacts:
       - Sprout.ipa
-      - iosApp/build/Build/Products/Release-iphoneos/iosApp.app
+      - iosApp/build/Build/Products/Release-iphoneos/*.app
       - shared/build/reports/**/*
