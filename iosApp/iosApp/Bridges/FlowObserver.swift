@@ -6,7 +6,7 @@ import Shared
 /// Cast the values inside the closure to your expected Swift type.
 @MainActor
 final class FlowSubscription {
-    private var cancellable: Cancellable?
+    private var cancellable: FlowCancellable?
 
     init<T>(flow: Any, onEach: @escaping (T) -> Void) {
         self.cancellable = FlowHelperKt.subscribe(flow: flow as! Kotlinx_coroutines_coreFlow) { value in

@@ -312,7 +312,7 @@ private struct GardenStrip: View {
     }
 }
 
-extension Space: Identifiable {}
+extension Space: @retroactive Identifiable {}
 
 struct CreateSpaceSheet: View {
     var onCreate: (String, String, String) -> Void

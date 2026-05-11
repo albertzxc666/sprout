@@ -141,7 +141,7 @@ struct CardListView: View {
     }
 }
 
-extension Card: Identifiable {}
+extension Card: @retroactive Identifiable {}
 
 struct CardRow: View {
     let card: Card

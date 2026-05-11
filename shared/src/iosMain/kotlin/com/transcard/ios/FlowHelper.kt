@@ -9,14 +9,15 @@ import kotlinx.coroutines.flow.onEach
 
 /**
  * Bridge for collecting a Kotlin Flow from Swift.
- * Returns a [Cancellable] — call [Cancellable.cancel] to stop collection.
+ * Returns a [FlowCancellable] — call [FlowCancellable.cancel] to stop collection.
+ * Named explicitly to avoid clashing with Swift's `Combine.Cancellable`.
  */
-class Cancellable internal constructor(private val job: Job) {
+class FlowCancellable internal constructor(private val job: Job) {
     fun cancel() { job.cancel() }
 }
 
-fun <T : Any> subscribe(flow: Flow<T>, onEach: (T) -> Unit): Cancellable {
+fun <T : Any> subscribe(flow: Flow<T>, onEach: (T) -> Unit): FlowCancellable {
     val scope = CoroutineScope(Dispatchers.Main)
     val job = flow.onEach { onEach(it) }.launchIn(scope)
-    return Cancellable(job)
+    return FlowCancellable(job)
 }
