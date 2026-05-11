@@ -30,6 +30,14 @@ workflows:
             echo "yandex.dict.key=$YANDEX_DICT_KEY" >> $CM_BUILD_DIR/local.properties
           fi
           echo "sdk.dir=$ANDROID_SDK_ROOT" >> $CM_BUILD_DIR/local.properties || true
+      - name: Generate Gradle wrapper
+        script: |
+          cd $CM_BUILD_DIR
+          if [ ! -f gradlew ]; then
+            gradle wrapper --gradle-version 8.10 --distribution-type all
+          fi
+          chmod +x ./gradlew
+          ./gradlew --version
       - name: Install XcodeGen
         script: |
           brew install xcodegen
