@@ -9,6 +9,13 @@ settings:
   base:
     SWIFT_VERSION: "5.0"
     ENABLE_BITCODE: NO
+    LLVM_LTO: NO
+    DEAD_CODE_STRIPPING: NO
+  configs:
+    Release:
+      SWIFT_OPTIMIZATION_LEVEL: "-Onone"
+      GCC_OPTIMIZATION_LEVEL: "0"
+      LLVM_LTO: NO
 
 targets:
   iosApp:
