@@ -34,6 +34,7 @@ targets:
         embed: true
         codeSign: true
         implicit: true
+      - sdk: libsqlite3.tbd
     info:
       path: iosApp/Info.plist
       properties:
