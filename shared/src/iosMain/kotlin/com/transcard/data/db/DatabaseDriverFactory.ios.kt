@@ -5,8 +5,9 @@ import app.cash.sqldelight.driver.native.NativeSqliteDriver
 import com.transcard.db.TransCardDatabase
 
 actual class DatabaseDriverFactory {
-    actual fun create(): SqlDriver = NativeSqliteDriver(
-        schema = TransCardDatabase.Schema,
-        name = "transcard.db"
-    )
+    actual fun create(): SqlDriver {
+        val driver = NativeSqliteDriver(TransCardDatabase.Schema, "transcard.db")
+        driver.execute(null, "PRAGMA foreign_keys=ON;", 0)
+        return driver
+    }
 }
