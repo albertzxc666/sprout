@@ -15,6 +15,8 @@ datetime = "0.6.1"
 turbine = "1.2.0"
 serialization = "1.7.3"
 ktor = "3.0.3"
+multiplatform-settings = "1.2.0"
+android-security-crypto = "1.1.0-alpha06"
 android-minSdk = "26"
 android-compileSdk = "35"
 android-targetSdk = "35"
@@ -52,6 +54,15 @@ ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-conte
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
+ktor-client-auth = { group = "io.ktor", name = "ktor-client-auth", version.ref = "ktor" }
+ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
+
+# Russhwolf multiplatform-settings — для secure-token-storage (KeychainSettings / EncryptedSettings / PropertiesSettings)
+multiplatform-settings-no-arg = { group = "com.russhwolf", name = "multiplatform-settings-no-arg", version.ref = "multiplatform-settings" }
+multiplatform-settings-coroutines = { group = "com.russhwolf", name = "multiplatform-settings-coroutines", version.ref = "multiplatform-settings" }
+
+# AndroidX security-crypto для EncryptedSharedPreferences (на Android — backing store для multiplatform-settings)
+androidx-security-crypto = { group = "androidx.security", name = "security-crypto-ktx", version.ref = "android-security-crypto" }
 
 # Voyager (Compose Multiplatform navigation)
 voyager-navigator = { group = "cafe.adriel.voyager", name = "voyager-navigator", version.ref = "voyager" }

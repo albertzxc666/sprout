@@ -20,17 +20,23 @@ val yandexDictKey: String = (localProps.getProperty("yandex.dict.key")
     ?: System.getenv("YANDEX_DICT_KEY")
     ?: "").trim()
 
+val sproutApiBaseUrl: String = (localProps.getProperty("sprout.api.base.url")
+    ?: System.getenv("SPROUT_API_BASE_URL")
+    ?: "http://85.198.69.145").trim()
+
 val generatedConfigDir = layout.buildDirectory.dir("generated/source/sproutConfig/commonMain")
 val generateSproutConfig = tasks.register("generateSproutConfig") {
     val outDir = generatedConfigDir.get().asFile
     outputs.dir(outDir)
     inputs.property("yandexKey", yandexDictKey)
+    inputs.property("apiBaseUrl", sproutApiBaseUrl)
     doLast {
         if (yandexDictKey.isEmpty()) {
             logger.warn("[Sprout] Yandex Dict key is EMPTY — online translations will not work in this build.")
         } else {
             logger.lifecycle("[Sprout] Yandex Dict key configured (length: ${yandexDictKey.length}).")
         }
+        logger.lifecycle("[Sprout] API_BASE_URL = $sproutApiBaseUrl")
         val pkg = File(outDir, "com/transcard/config")
         pkg.mkdirs()
         File(pkg, "Config.kt").writeText(
@@ -41,6 +47,9 @@ val generateSproutConfig = tasks.register("generateSproutConfig") {
             internal object Config {
                 /** Yandex Dictionary API key, loaded from local.properties at build time. */
                 const val YANDEX_DICT_KEY: String = "$yandexDictKey"
+
+                /** sprout-server API base URL (no trailing slash). Override via local.properties:sprout.api.base.url or env SPROUT_API_BASE_URL. */
+                const val API_BASE_URL: String = "$sproutApiBaseUrl"
             }
             """.trimIndent() + "\n"
         )
@@ -105,6 +114,11 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktor.client.auth)
+            implementation(libs.ktor.client.logging)
+
+            implementation(libs.multiplatform.settings.no.arg)
+            implementation(libs.multiplatform.settings.coroutines)
         }
 
         commonTest.dependencies {
@@ -119,6 +133,7 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.androidx.security.crypto)
         }
 
         val desktopMain by getting {

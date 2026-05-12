@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Разрешает cleartext HTTP только для sprout-server (пока VPS без домена/TLS).
+  Когда появится домен с Let's Encrypt — удалить этот файл и android:networkSecurityConfig из AndroidManifest.
+-->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">85.198.69.145</domain>
+    </domain-config>
+</network-security-config>

@@ -3,15 +3,19 @@ package com.transcard.di
 import com.transcard.data.api.YandexDictionaryApi
 import com.transcard.data.api.createHttpClient
 import com.transcard.data.db.createDatabase
+import com.transcard.data.remote.SproutApi
+import com.transcard.data.repository.AuthRepositoryImpl
 import com.transcard.data.repository.CardGroupRepositoryImpl
 import com.transcard.data.repository.CardRepositoryImpl
 import com.transcard.data.repository.ProgressRepositoryImpl
 import com.transcard.data.repository.SpaceRepositoryImpl
 import com.transcard.data.repository.TranslationRepositoryImpl
+import com.transcard.data.storage.TokenStorage
 import com.transcard.data.translation.LocalDictionary
 import com.transcard.domain.model.StudyDirection
 import com.transcard.domain.model.StudyMode
 import com.transcard.domain.model.StudyScope
+import com.transcard.domain.repository.AuthRepository
 import com.transcard.domain.repository.CardGroupRepository
 import com.transcard.domain.repository.CardRepository
 import com.transcard.domain.repository.ProgressRepository
@@ -44,6 +48,12 @@ val sharedModule = module {
 
     single { LocalDictionary() }
     single<TranslationRepository> { TranslationRepositoryImpl(get(), get()) }
+
+    // sprout-server: secure token storage + Ktor wrapper + auth repo.
+    // platformModule() даёт Settings (Keychain / EncryptedSharedPreferences / JvmPreferences).
+    single { TokenStorage(get()) }
+    single { SproutApi(tokenStorage = get(), httpClientFactory = ::createHttpClient) }
+    single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
 
     factoryOf(::GetStudyCardsUseCase)
     factoryOf(::CheckAnswerUseCase)
