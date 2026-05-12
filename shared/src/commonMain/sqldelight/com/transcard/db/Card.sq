@@ -1,7 +1,7 @@
 CREATE TABLE Card (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     spaceId INTEGER NOT NULL,
-    groupId INTEGER NOT NULL,
+    groupId INTEGER NOT NULL DEFAULT 0,
     nativeWord TEXT NOT NULL,
     targetWord TEXT NOT NULL,
     hint TEXT,
@@ -9,8 +9,7 @@ CREATE TABLE Card (
     easiness REAL NOT NULL DEFAULT 2.5,
     repetitions INTEGER NOT NULL DEFAULT 0,
     nextReviewAt INTEGER NOT NULL DEFAULT 0,
-    FOREIGN KEY (spaceId) REFERENCES Space(id) ON DELETE CASCADE,
-    FOREIGN KEY (groupId) REFERENCES CardGroup(id) ON DELETE CASCADE
+    FOREIGN KEY (spaceId) REFERENCES Space(id) ON DELETE CASCADE
 );
 
 CREATE INDEX card_space_idx ON Card(spaceId);

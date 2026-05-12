@@ -12,32 +12,14 @@ INSERT INTO CardGroup(spaceId, name, createdAt)
 SELECT id, 'Общее', strftime('%s', 'now') * 1000
 FROM Space;
 
-CREATE TABLE Card_new (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    spaceId INTEGER NOT NULL,
-    groupId INTEGER NOT NULL,
-    nativeWord TEXT NOT NULL,
-    targetWord TEXT NOT NULL,
-    hint TEXT,
-    intervalDays REAL NOT NULL DEFAULT 0,
-    easiness REAL NOT NULL DEFAULT 2.5,
-    repetitions INTEGER NOT NULL DEFAULT 0,
-    nextReviewAt INTEGER NOT NULL DEFAULT 0,
-    FOREIGN KEY (spaceId) REFERENCES Space(id) ON DELETE CASCADE,
-    FOREIGN KEY (groupId) REFERENCES CardGroup(id) ON DELETE CASCADE
+ALTER TABLE Card ADD COLUMN groupId INTEGER NOT NULL DEFAULT 0;
+
+UPDATE Card
+SET groupId = (
+    SELECT g.id
+    FROM CardGroup g
+    WHERE g.spaceId = Card.spaceId
+    LIMIT 1
 );
 
-INSERT INTO Card_new (id, spaceId, groupId, nativeWord, targetWord, hint,
-                     intervalDays, easiness, repetitions, nextReviewAt)
-SELECT c.id, c.spaceId,
-       (SELECT g.id FROM CardGroup g WHERE g.spaceId = c.spaceId LIMIT 1),
-       c.nativeWord, c.targetWord, c.hint,
-       c.intervalDays, c.easiness, c.repetitions, c.nextReviewAt
-FROM Card c;
-
-DROP TABLE Card;
-ALTER TABLE Card_new RENAME TO Card;
-
-CREATE INDEX card_space_idx ON Card(spaceId);
-CREATE INDEX card_due_idx ON Card(spaceId, nextReviewAt);
 CREATE INDEX card_group_idx ON Card(groupId);

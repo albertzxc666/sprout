@@ -5,7 +5,19 @@
       "Bash(dir \"c:\\\\Users\\\\ALBERT\\\\Desktop\\\\TransCard\")",
       "Bash(gradle --version)",
       "mcp__context7__resolve-library-id",
-      "mcp__context7__query-docs"
+      "mcp__context7__query-docs",
+      "Bash(./gradlew :shared:compileKotlinAndroid :shared:compileKotlinIosX64)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(ls -la \"c:/Users/alber/Desktop/WEB-PROJECTS/\" 2>&1 | head -50)",
+      "Read(//c/Users/alber/Desktop/WEB-PROJECTS/**)",
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)",
+      "PowerShell(docker --version)",
+      "PowerShell(docker compose version)",
+      "PowerShell(Set-Location \"c:\\\\Users\\\\alber\\\\Desktop\\\\WEB-PROJECTS\\\\transcard-server\"; Get-ChildItem -Recurse -Force -Depth 2 | Where-Object { $_.FullName -notmatch 'node_modules' } | Select-Object FullName)",
+      "PowerShell(Set-Location \"c:\\\\Users\\\\alber\\\\Desktop\\\\WEB-PROJECTS\\\\transcard-server\"; $env:PORT = \"3000\"; $p = Start-Process -FilePath node -ArgumentList \"dist/index.js\" -PassThru -RedirectStandardOutput \"smoke.log\" -RedirectStandardError \"smoke.err\" -NoNewWindow; $p.Id | Out-File -Encoding utf8 smoke.pid; \"Started node PID=$\\($p.Id\\)\"; Start-Sleep -Seconds 2; \"--- smoke.log ---\"; Get-Content smoke.log -ErrorAction SilentlyContinue; \"--- curl ---\"; curl.exe -s http://localhost:3000/healthz; \"`n--- stop ---\"; Stop-Process -Id $p.Id -Force; Remove-Item smoke.log,smoke.err,smoke.pid -ErrorAction SilentlyContinue; \"done\")",
+      "Bash(findstr /i \"gradlew\")"
     ]
   }
 }
