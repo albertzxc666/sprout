@@ -61,6 +61,7 @@ import com.transcard.data.preferences.Preferences
 import com.transcard.domain.model.GardenStage
 import com.transcard.domain.model.StudyDirection
 import com.transcard.domain.model.StudyMode
+import com.transcard.domain.model.StudyScope
 import com.transcard.presentation.components.AppCard
 import com.transcard.presentation.util.humanizeIntervalRu
 import com.transcard.presentation.viewmodel.StudyViewModel
@@ -138,14 +139,14 @@ private fun SrsHint(days: Double, prevStage: GardenStage?, nextStage: GardenStag
 }
 
 data class StudyScreen(
-    val spaceId: Long,
+    val scope: StudyScope,
     val direction: StudyDirection,
     val mode: StudyMode
 ) : Screen {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
-        val vm: StudyViewModel = koinScreenModel { parametersOf(spaceId, direction, mode) }
+        val vm: StudyViewModel = koinScreenModel { parametersOf(scope, direction, mode) }
         val navigator = LocalNavigator.currentOrThrow
         val state by vm.state.collectAsState()
 
@@ -164,7 +165,7 @@ data class StudyScreen(
             if (state.isFinished && state.cards.isNotEmpty()) {
                 navigator.replace(
                     StudyResultScreen(
-                        spaceId = spaceId,
+                        scope = scope,
                         direction = direction,
                         mode = mode,
                         correct = state.correctCount,

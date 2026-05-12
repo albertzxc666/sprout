@@ -30,11 +30,12 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.transcard.domain.model.StudyDirection
 import com.transcard.domain.model.StudyMode
+import com.transcard.domain.model.StudyScope
 import com.transcard.presentation.components.AppCard
 import kotlin.math.roundToInt
 
 data class StudyResultScreen(
-    val spaceId: Long,
+    val scope: StudyScope,
     val direction: StudyDirection,
     val mode: StudyMode,
     val correct: Int,
@@ -102,7 +103,7 @@ data class StudyResultScreen(
                 Spacer(Modifier.height(32.dp))
 
                 Button(
-                    onClick = { navigator.replace(StudyScreen(spaceId, direction, mode)) },
+                    onClick = { navigator.replace(StudyScreen(scope, direction, mode)) },
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     shape = MaterialTheme.shapes.medium,
                     elevation = ButtonDefaults.buttonElevation(

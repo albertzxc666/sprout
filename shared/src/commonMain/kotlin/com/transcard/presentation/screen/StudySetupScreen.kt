@@ -35,9 +35,10 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.transcard.domain.model.StudyDirection
 import com.transcard.domain.model.StudyMode
+import com.transcard.domain.model.StudyScope
 import com.transcard.presentation.components.AppCard
 
-data class StudySetupScreen(val spaceId: Long) : Screen {
+data class StudySetupScreen(val scope: StudyScope) : Screen {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
@@ -113,7 +114,7 @@ data class StudySetupScreen(val spaceId: Long) : Screen {
 
                 Button(
                     onClick = {
-                        navigator.replace(StudyScreen(spaceId, direction, mode))
+                        navigator.replace(StudyScreen(scope, direction, mode))
                     },
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     shape = MaterialTheme.shapes.medium,
