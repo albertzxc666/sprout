@@ -1,21 +1,29 @@
 package com.transcard.domain.sync
 
-sealed class SyncStatus {
-    /** Не залогинен в аккаунт — синк выключен. */
-    data object NotAuthenticated : SyncStatus()
+/**
+ * Состояние синхронизации. Сделано data class'ом, а не sealed-иерархией, для простого Swift-интеропа
+ * (Kotlin Native экспортирует sealed sub-classes с непредсказуемыми именами вроде `SyncStatusIdle`
+ * либо вложенных — это ломает кросс-платформенный код в SwiftUI).
+ */
+data class SyncStatus(
+    val kind: SyncStatusKind,
+    val errorMessage: String? = null,
+    val errorRecoverable: Boolean = false,
+) {
+    val isIdle: Boolean get() = kind == SyncStatusKind.Idle
+    val isBusy: Boolean get() = kind == SyncStatusKind.Pushing || kind == SyncStatusKind.Pulling
+    val isError: Boolean get() = kind == SyncStatusKind.Error
 
-    /** Залогинен, всё актуально. */
-    data object Idle : SyncStatus()
+    companion object {
+        val NotAuthenticated = SyncStatus(SyncStatusKind.NotAuthenticated)
+        val Idle = SyncStatus(SyncStatusKind.Idle)
+        val Pushing = SyncStatus(SyncStatusKind.Pushing)
+        val Pulling = SyncStatus(SyncStatusKind.Pulling)
+        fun error(message: String, recoverable: Boolean): SyncStatus =
+            SyncStatus(SyncStatusKind.Error, errorMessage = message, errorRecoverable = recoverable)
+    }
+}
 
-    /** Идёт push на сервер. */
-    data object Pushing : SyncStatus()
-
-    /** Идёт pull с сервера. */
-    data object Pulling : SyncStatus()
-
-    /**
-     * Ошибка. `recoverable=true` — автоматический retry имеет смысл (сетевые проблемы).
-     * `recoverable=false` — нужно вмешательство пользователя (например, отозванный refresh).
-     */
-    data class Error(val message: String, val recoverable: Boolean) : SyncStatus()
+enum class SyncStatusKind {
+    NotAuthenticated, Idle, Pushing, Pulling, Error,
 }

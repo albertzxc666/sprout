@@ -21,6 +21,7 @@ final class SnapshotHistoryObservable: ObservableObject {
 struct SnapshotHistoryView: View {
     @StateObject private var state = SnapshotHistoryObservable()
     @State private var pendingRestore: SnapshotHistoryEntry?
+    @State private var alertVisible: Bool = false
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -36,7 +37,10 @@ struct SnapshotHistoryView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 List(state.ui.items, id: \.id) { item in
-                    Button { pendingRestore = item } label: {
+                    Button {
+                        pendingRestore = item
+                        alertVisible = true
+                    } label: {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(formattedDate(item.createdAt))
                                 .font(.headline)
@@ -54,17 +58,15 @@ struct SnapshotHistoryView: View {
         }
         .navigationTitle("История снапшотов")
         .navigationBarTitleDisplayMode(.inline)
-        .alert(item: $pendingRestore) { entry in
-            Alert(
-                title: Text("Восстановить снапшот?"),
-                message: Text("Все текущие локальные карточки будут заменены данными из этого снапшота (\(formattedDate(entry.createdAt)), \(entry.sizeBytes / 1024) КБ)."),
-                primaryButton: .destructive(Text("Восстановить")) {
-                    state.viewModel.restoreSnapshot(snapshotId: entry.id) {
-                        dismiss()
-                    }
-                },
-                secondaryButton: .cancel(Text("Отмена"))
-            )
+        .alert("Восстановить снапшот?", isPresented: $alertVisible, presenting: pendingRestore) { entry in
+            Button("Восстановить", role: .destructive) {
+                state.viewModel.restoreSnapshot(snapshotId: entry.id) {
+                    dismiss()
+                }
+            }
+            Button("Отмена", role: .cancel) { }
+        } message: { entry in
+            Text("Все текущие локальные карточки будут заменены данными из этого снапшота (\(formattedDate(entry.createdAt)), \(entry.sizeBytes / 1024) КБ).")
         }
     }
 
@@ -76,5 +78,3 @@ struct SnapshotHistoryView: View {
         return f.string(from: d)
     }
 }
-
-extension SnapshotHistoryEntry: Identifiable {}

@@ -13,7 +13,7 @@ final class AccountObservable: ObservableObject {
         let vm = DI.accountViewModel()
         self.viewModel = vm
         self.authState = AuthState.companion.Anonymous
-        self.syncStatus = SyncStatusNotAuthenticated()
+        self.syncStatus = SyncStatus.companion.NotAuthenticated
 
         authSubscription = FlowSubscription(flow: vm.authState) { [weak self] (s: AuthState) in
             self?.authState = s
@@ -86,7 +86,7 @@ struct AccountView: View {
                 Text("Синхронизировать сейчас").frame(maxWidth: .infinity).padding(.vertical, 12)
             }
             .buttonStyle(.borderedProminent)
-            .disabled(state.syncStatus is SyncStatusPushing || state.syncStatus is SyncStatusPulling)
+            .disabled(state.syncStatus.isBusy)
 
             NavigationLink {
                 SnapshotHistoryView()
@@ -108,21 +108,22 @@ struct AccountView: View {
 
     @ViewBuilder
     private var syncStatusLine: some View {
-        if state.syncStatus is SyncStatusIdle {
+        switch state.syncStatus.kind {
+        case SyncStatusKind.idle:
             Text("Синхронизировано").font(.caption).foregroundColor(AppPalette.textSecondary)
-        } else if state.syncStatus is SyncStatusPushing {
+        case SyncStatusKind.pushing:
             HStack(spacing: 8) {
                 ProgressView().scaleEffect(0.8)
                 Text("Отправка изменений…").font(.caption)
             }
-        } else if state.syncStatus is SyncStatusPulling {
+        case SyncStatusKind.pulling:
             HStack(spacing: 8) {
                 ProgressView().scaleEffect(0.8)
                 Text("Получение с сервера…").font(.caption)
             }
-        } else if let err = state.syncStatus as? SyncStatusError {
-            Text("Ошибка: \(err.message)").font(.caption).foregroundColor(.red)
-        } else {
+        case SyncStatusKind.error:
+            Text("Ошибка: \(state.syncStatus.errorMessage ?? "")").font(.caption).foregroundColor(.red)
+        default:
             Text("Не подключено").font(.caption).foregroundColor(AppPalette.textSecondary)
         }
     }

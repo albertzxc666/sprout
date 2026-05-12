@@ -36,6 +36,7 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.transcard.domain.sync.SyncStatus
+import com.transcard.domain.sync.SyncStatusKind
 import com.transcard.presentation.viewmodel.AccountViewModel
 
 object AccountScreen : Screen {
@@ -124,7 +125,7 @@ private fun AuthenticatedState(
     Spacer(Modifier.height(8.dp))
     Button(
         onClick = onSyncNowClick,
-        enabled = status !is SyncStatus.Pushing && status !is SyncStatus.Pulling,
+        enabled = !status.isBusy,
         modifier = Modifier.fillMaxWidth().height(52.dp),
     ) { Text("Синхронизировать сейчас") }
     OutlinedButton(
@@ -140,13 +141,13 @@ private fun AuthenticatedState(
 @Composable
 private fun SyncStatusLine(status: SyncStatus) {
     Box(modifier = Modifier.fillMaxWidth()) {
-        when (status) {
-            SyncStatus.Idle -> Text("Синхронизировано", style = MaterialTheme.typography.bodySmall)
-            SyncStatus.Pushing -> InlineProgress("Отправка изменений…")
-            SyncStatus.Pulling -> InlineProgress("Получение с сервера…")
-            SyncStatus.NotAuthenticated -> Text("Не подключено", style = MaterialTheme.typography.bodySmall)
-            is SyncStatus.Error -> Text(
-                "Ошибка: ${status.message}",
+        when (status.kind) {
+            SyncStatusKind.Idle -> Text("Синхронизировано", style = MaterialTheme.typography.bodySmall)
+            SyncStatusKind.Pushing -> InlineProgress("Отправка изменений…")
+            SyncStatusKind.Pulling -> InlineProgress("Получение с сервера…")
+            SyncStatusKind.NotAuthenticated -> Text("Не подключено", style = MaterialTheme.typography.bodySmall)
+            SyncStatusKind.Error -> Text(
+                "Ошибка: ${status.errorMessage ?: ""}",
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
             )

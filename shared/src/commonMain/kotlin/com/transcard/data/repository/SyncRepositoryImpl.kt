@@ -89,7 +89,7 @@ class SyncRepositoryImpl(
         val envelope = api.restoreSnapshot(snapshotId)
         applySnapshotLocally(envelope.snapshot)
         statusFlow.value = SyncStatus.Idle
-    }.onFailure { statusFlow.value = SyncStatus.Error(it.message ?: "restore failed", recoverable = true) }
+    }.onFailure { statusFlow.value = SyncStatus.error(it.message ?: "restore failed", recoverable = true) }
 
     private fun startAuthLoop() {
         internalScope.launch {
@@ -144,7 +144,7 @@ class SyncRepositoryImpl(
             )
             statusFlow.value = SyncStatus.Idle
         } catch (e: Throwable) {
-            statusFlow.value = SyncStatus.Error(e.message ?: "push failed", recoverable = true)
+            statusFlow.value = SyncStatus.error(e.message ?: "push failed", recoverable = true)
             throw e
         }
     }
@@ -163,7 +163,7 @@ class SyncRepositoryImpl(
             applySnapshotLocally(envelope.snapshot)
             statusFlow.value = SyncStatus.Idle
         } catch (e: Throwable) {
-            statusFlow.value = SyncStatus.Error(e.message ?: "pull failed", recoverable = true)
+            statusFlow.value = SyncStatus.error(e.message ?: "pull failed", recoverable = true)
             throw e
         }
     }
