@@ -30,7 +30,9 @@ class SpaceRepositoryImpl(
             val now = Clock.System.now().toEpochMilliseconds()
             db.transactionWithResult {
                 db.spaceQueries.insert(name, nativeLang, targetLang, now)
-                db.spaceQueries.lastInsertedId().executeAsOne()
+                val spaceId = db.spaceQueries.lastInsertedId().executeAsOne()
+                db.cardGroupQueries.insert(spaceId, DEFAULT_GROUP_NAME, now)
+                spaceId
             }
         }
 
@@ -47,4 +49,8 @@ class SpaceRepositoryImpl(
         targetLang = targetLang,
         createdAt = createdAt
     )
+
+    private companion object {
+        const val DEFAULT_GROUP_NAME = "Общее"
+    }
 }
