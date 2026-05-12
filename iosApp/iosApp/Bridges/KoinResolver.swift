@@ -7,17 +7,21 @@ enum DI {
         return KoinHelper.shared.getSpaceListViewModel()
     }
 
-    static func cardListViewModel(spaceId: Int64) -> CardListViewModel {
-        return KoinHelper.shared.getCardListViewModel(spaceId: spaceId)
+    static func groupListViewModel(spaceId: Int64) -> GroupListViewModel {
+        return KoinHelper.shared.getGroupListViewModel(spaceId: spaceId)
+    }
+
+    static func cardListViewModel(groupId: Int64) -> CardListViewModel {
+        return KoinHelper.shared.getCardListViewModel(groupId: groupId)
     }
 
     static func studyViewModel(
-        spaceId: Int64,
+        scope: StudyScope,
         direction: StudyDirection,
         mode: StudyMode
     ) -> StudyViewModel {
         return KoinHelper.shared.getStudyViewModel(
-            spaceId: spaceId,
+            scope: scope,
             direction: direction,
             mode: mode
         )
