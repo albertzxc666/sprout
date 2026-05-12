@@ -2,6 +2,7 @@ package com.transcard.data.repository
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import com.transcard.data.sync.SyncTrigger
 import com.transcard.db.TransCardDatabase
 import com.transcard.domain.model.Space
 import com.transcard.domain.repository.SpaceRepository
@@ -14,6 +15,7 @@ import kotlinx.datetime.Clock
 
 class SpaceRepositoryImpl(
     private val db: TransCardDatabase,
+    private val syncTrigger: SyncTrigger,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : SpaceRepository {
 
@@ -28,17 +30,20 @@ class SpaceRepositoryImpl(
     override suspend fun createSpace(name: String, nativeLang: String, targetLang: String): Long =
         withContext(dispatcher) {
             val now = Clock.System.now().toEpochMilliseconds()
-            db.transactionWithResult {
+            val spaceId = db.transactionWithResult {
                 db.spaceQueries.insert(name, nativeLang, targetLang, now)
-                val spaceId = db.spaceQueries.lastInsertedId().executeAsOne()
-                db.cardGroupQueries.insert(spaceId, DEFAULT_GROUP_NAME, now)
-                spaceId
+                val sid = db.spaceQueries.lastInsertedId().executeAsOne()
+                db.cardGroupQueries.insert(sid, DEFAULT_GROUP_NAME, now)
+                sid
             }
+            syncTrigger.markDirty()
+            spaceId
         }
 
     override suspend fun deleteSpace(id: Long) {
         withContext(dispatcher) {
             db.spaceQueries.deleteById(id)
+            syncTrigger.markDirty()
         }
     }
 

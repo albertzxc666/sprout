@@ -3,6 +3,7 @@ package com.transcard.data.repository
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
+import com.transcard.data.sync.SyncTrigger
 import com.transcard.db.TransCardDatabase
 import com.transcard.domain.model.Card
 import com.transcard.domain.model.GardenStage
@@ -15,6 +16,7 @@ import kotlinx.coroutines.withContext
 
 class CardRepositoryImpl(
     private val db: TransCardDatabase,
+    private val syncTrigger: SyncTrigger,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : CardRepository {
 
@@ -87,12 +89,14 @@ class CardRepositoryImpl(
     ) {
         withContext(dispatcher) {
             db.cardQueries.insert(spaceId, groupId, nativeWord, targetWord, hint)
+            syncTrigger.markDirty()
         }
     }
 
     override suspend fun updateCard(card: Card) {
         withContext(dispatcher) {
             db.cardQueries.update(card.nativeWord, card.targetWord, card.hint, card.id)
+            syncTrigger.markDirty()
         }
     }
 
@@ -105,12 +109,14 @@ class CardRepositoryImpl(
     ) {
         withContext(dispatcher) {
             db.cardQueries.updateSrs(intervalDays, easiness, repetitions.toLong(), nextReviewAt, cardId)
+            syncTrigger.markDirty()
         }
     }
 
     override suspend fun deleteCard(id: Long) {
         withContext(dispatcher) {
             db.cardQueries.deleteById(id)
+            syncTrigger.markDirty()
         }
     }
 

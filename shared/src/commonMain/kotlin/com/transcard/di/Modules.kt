@@ -9,8 +9,10 @@ import com.transcard.data.repository.CardGroupRepositoryImpl
 import com.transcard.data.repository.CardRepositoryImpl
 import com.transcard.data.repository.ProgressRepositoryImpl
 import com.transcard.data.repository.SpaceRepositoryImpl
+import com.transcard.data.repository.SyncRepositoryImpl
 import com.transcard.data.repository.TranslationRepositoryImpl
 import com.transcard.data.storage.TokenStorage
+import com.transcard.data.sync.SyncTrigger
 import com.transcard.data.translation.LocalDictionary
 import com.transcard.domain.model.StudyDirection
 import com.transcard.domain.model.StudyMode
@@ -20,6 +22,7 @@ import com.transcard.domain.repository.CardGroupRepository
 import com.transcard.domain.repository.CardRepository
 import com.transcard.domain.repository.ProgressRepository
 import com.transcard.domain.repository.SpaceRepository
+import com.transcard.domain.repository.SyncRepository
 import com.transcard.domain.repository.TranslationRepository
 import com.transcard.domain.usecase.CheckAnswerUseCase
 import com.transcard.domain.usecase.GetSpaceStatsUseCase
@@ -38,10 +41,13 @@ import org.koin.dsl.module
 val sharedModule = module {
     single { createDatabase(get()) }
 
-    single<SpaceRepository> { SpaceRepositoryImpl(get()) }
-    single<CardGroupRepository> { CardGroupRepositoryImpl(get()) }
-    single<CardRepository> { CardRepositoryImpl(get()) }
-    single<ProgressRepository> { ProgressRepositoryImpl(get()) }
+    // SyncTrigger — каждый репозиторий дёргает его при mutation.
+    single { SyncTrigger(get()) }
+
+    single<SpaceRepository> { SpaceRepositoryImpl(get(), get()) }
+    single<CardGroupRepository> { CardGroupRepositoryImpl(get(), get()) }
+    single<CardRepository> { CardRepositoryImpl(get(), get()) }
+    single<ProgressRepository> { ProgressRepositoryImpl(get(), get()) }
 
     single { createHttpClient() }
     single { YandexDictionaryApi(get()) }
@@ -54,6 +60,7 @@ val sharedModule = module {
     single { TokenStorage(get()) }
     single { SproutApi(tokenStorage = get(), httpClientFactory = ::createHttpClient) }
     single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
+    single<SyncRepository> { SyncRepositoryImpl(db = get(), api = get(), authRepository = get()) }
 
     factoryOf(::GetStudyCardsUseCase)
     factoryOf(::CheckAnswerUseCase)

@@ -20,9 +20,16 @@ insert:
 INSERT INTO Space(name, nativeLang, targetLang, createdAt)
 VALUES (?, ?, ?, ?);
 
+insertWithId:
+INSERT INTO Space(id, name, nativeLang, targetLang, createdAt)
+VALUES (?, ?, ?, ?, ?);
+
 deleteById:
 DELETE FROM Space
 WHERE id = ?;
+
+deleteAll:
+DELETE FROM Space;
 
 lastInsertedId:
 SELECT last_insert_rowid();

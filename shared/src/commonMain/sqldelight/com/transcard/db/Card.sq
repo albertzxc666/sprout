@@ -114,6 +114,10 @@ insert:
 INSERT INTO Card(spaceId, groupId, nativeWord, targetWord, hint)
 VALUES (?, ?, ?, ?, ?);
 
+insertWithId:
+INSERT INTO Card(id, spaceId, groupId, nativeWord, targetWord, hint, intervalDays, easiness, repetitions, nextReviewAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
 update:
 UPDATE Card
 SET nativeWord = ?, targetWord = ?, hint = ?
@@ -127,3 +131,11 @@ WHERE id = ?;
 deleteById:
 DELETE FROM Card
 WHERE id = ?;
+
+deleteAll:
+DELETE FROM Card;
+
+selectAll:
+SELECT *
+FROM Card
+ORDER BY id ASC;

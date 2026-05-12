@@ -1,0 +1,11 @@
+CREATE TABLE SyncState (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    userId TEXT,
+    email TEXT,
+    lastPushedAt INTEGER NOT NULL DEFAULT 0,
+    lastPulledAt INTEGER NOT NULL DEFAULT 0,
+    lastServerSnapshotAt INTEGER NOT NULL DEFAULT 0,
+    pendingPush INTEGER NOT NULL DEFAULT 0
+);
+
+INSERT OR IGNORE INTO SyncState(id) VALUES (1);

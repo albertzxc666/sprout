@@ -31,6 +31,18 @@ insert:
 INSERT INTO StudyResult(cardId, correct, timestamp)
 VALUES (?, ?, ?);
 
+insertWithId:
+INSERT INTO StudyResult(id, cardId, correct, timestamp)
+VALUES (?, ?, ?, ?);
+
 deleteByCard:
 DELETE FROM StudyResult
 WHERE cardId = ?;
+
+deleteAll:
+DELETE FROM StudyResult;
+
+selectAll:
+SELECT *
+FROM StudyResult
+ORDER BY id ASC;

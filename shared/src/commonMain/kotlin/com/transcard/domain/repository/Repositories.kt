@@ -8,6 +8,7 @@ import com.transcard.domain.model.StudyResult
 import com.transcard.domain.model.StudyResultWithSpace
 import com.transcard.domain.model.TranslationSuggestion
 import com.transcard.domain.sync.AuthState
+import com.transcard.domain.sync.SyncStatus
 import kotlinx.coroutines.flow.Flow
 
 interface SpaceRepository {
@@ -67,4 +68,31 @@ interface AuthRepository {
     /** Отзывает refresh на сервере и чистит local storage. */
     suspend fun logout()
 }
+
+interface SyncRepository {
+    /** Hot Flow с текущим состоянием синхронизации. */
+    fun observeStatus(): Flow<SyncStatus>
+
+    /** Принудительный push snapshot'а (без debounce). Возвращает успех/ошибку. */
+    suspend fun pushNow(): Result<Unit>
+
+    /**
+     * Вызывается при старте приложения. Сначала пушит локальные изменения (если есть),
+     * потом тянет с сервера более свежий snapshot, если он есть.
+     */
+    suspend fun pullOnStart(): Result<Unit>
+
+    /** История последних снапшотов на сервере (для UI «Восстановить»). */
+    suspend fun fetchHistory(): Result<List<SnapshotHistoryEntry>>
+
+    /** Восстанавливает указанный snapshot — заменяет локальные данные. */
+    suspend fun restoreSnapshot(snapshotId: String): Result<Unit>
+}
+
+data class SnapshotHistoryEntry(
+    val id: String,
+    val createdAt: Long,
+    val sizeBytes: Int,
+    val clientInfo: String?,
+)
 

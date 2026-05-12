@@ -1,0 +1,41 @@
+CREATE TABLE SyncState (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    userId TEXT,
+    email TEXT,
+    lastPushedAt INTEGER NOT NULL DEFAULT 0,
+    lastPulledAt INTEGER NOT NULL DEFAULT 0,
+    lastServerSnapshotAt INTEGER NOT NULL DEFAULT 0,
+    pendingPush INTEGER NOT NULL DEFAULT 0
+);
+
+INSERT OR IGNORE INTO SyncState(id) VALUES (1);
+
+selectState:
+SELECT *
+FROM SyncState
+WHERE id = 1;
+
+setSession:
+UPDATE SyncState
+SET userId = ?, email = ?, pendingPush = 1, lastPushedAt = 0, lastPulledAt = 0, lastServerSnapshotAt = 0
+WHERE id = 1;
+
+clearSession:
+UPDATE SyncState
+SET userId = NULL, email = NULL, pendingPush = 0, lastPushedAt = 0, lastPulledAt = 0, lastServerSnapshotAt = 0
+WHERE id = 1;
+
+markDirty:
+UPDATE SyncState
+SET pendingPush = 1
+WHERE id = 1;
+
+markPushed:
+UPDATE SyncState
+SET pendingPush = 0, lastPushedAt = ?, lastServerSnapshotAt = ?
+WHERE id = 1;
+
+markPulled:
+UPDATE SyncState
+SET lastPulledAt = ?, lastServerSnapshotAt = ?, pendingPush = 0
+WHERE id = 1;

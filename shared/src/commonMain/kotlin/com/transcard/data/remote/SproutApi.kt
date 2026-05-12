@@ -3,9 +3,13 @@ package com.transcard.data.remote
 import com.transcard.config.Config
 import com.transcard.data.remote.dto.AuthResponse
 import com.transcard.data.remote.dto.CredentialsRequest
+import com.transcard.data.remote.dto.HistoryItem
 import com.transcard.data.remote.dto.LogoutRequest
+import com.transcard.data.remote.dto.PushRequest
+import com.transcard.data.remote.dto.PushResponse
 import com.transcard.data.remote.dto.RefreshRequest
 import com.transcard.data.remote.dto.RefreshResponse
+import com.transcard.data.remote.dto.SnapshotEnvelope
 import com.transcard.data.storage.TokenStorage
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -16,6 +20,8 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
@@ -123,6 +129,35 @@ class SproutApi(
         if (!resp.status.isSuccess() && resp.status != HttpStatusCode.NoContent) {
             // logout best-effort: чистим локально даже если сервер не ответил OK
         }
+    }
+
+    // ---------- sync endpoints (через authed — Bearer-токен подставляется автоматически) ----------
+
+    suspend fun pushSnapshot(request: PushRequest): PushResponse {
+        val resp = authed.post("$baseUrl/api/v1/sync") { setBody(request) }
+        return resp.parseOrThrow()
+    }
+
+    /** Возвращает snapshot, если сервер имеет данные новее `sinceTimestamp`; null если 304. */
+    suspend fun fetchLatestSnapshot(sinceTimestamp: Long): SnapshotEnvelope? {
+        val resp = authed.get("$baseUrl/api/v1/sync/latest") {
+            if (sinceTimestamp > 0) parameter("sinceTimestamp", sinceTimestamp)
+        }
+        return when (resp.status) {
+            HttpStatusCode.NotModified -> null
+            HttpStatusCode.OK -> resp.body()
+            else -> throw SproutApiException(resp.status.value, runCatching { resp.bodyAsText() }.getOrDefault(""))
+        }
+    }
+
+    suspend fun fetchHistory(): List<HistoryItem> {
+        val resp = authed.get("$baseUrl/api/v1/sync/history")
+        return resp.parseOrThrow()
+    }
+
+    suspend fun restoreSnapshot(snapshotId: String): SnapshotEnvelope {
+        val resp = authed.post("$baseUrl/api/v1/sync/restore/$snapshotId")
+        return resp.parseOrThrow()
     }
 
     private suspend inline fun <reified T> HttpResponse.parseOrThrow(): T {

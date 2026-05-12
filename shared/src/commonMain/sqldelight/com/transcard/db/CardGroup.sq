@@ -23,6 +23,10 @@ insert:
 INSERT INTO CardGroup(spaceId, name, createdAt)
 VALUES (?, ?, ?);
 
+insertWithId:
+INSERT INTO CardGroup(id, spaceId, name, createdAt)
+VALUES (?, ?, ?, ?);
+
 update:
 UPDATE CardGroup
 SET name = ?
@@ -31,6 +35,14 @@ WHERE id = ?;
 deleteById:
 DELETE FROM CardGroup
 WHERE id = ?;
+
+deleteAll:
+DELETE FROM CardGroup;
+
+selectAll:
+SELECT *
+FROM CardGroup
+ORDER BY id ASC;
 
 countBySpace:
 SELECT COUNT(*)

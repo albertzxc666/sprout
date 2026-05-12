@@ -2,6 +2,7 @@ package com.transcard.data.repository
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import com.transcard.data.sync.SyncTrigger
 import com.transcard.db.TransCardDatabase
 import com.transcard.domain.model.StudyResult
 import com.transcard.domain.model.StudyResultWithSpace
@@ -15,6 +16,7 @@ import kotlinx.datetime.Clock
 
 class ProgressRepositoryImpl(
     private val db: TransCardDatabase,
+    private val syncTrigger: SyncTrigger,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : ProgressRepository {
 
@@ -47,6 +49,7 @@ class ProgressRepositoryImpl(
         withContext(dispatcher) {
             val now = Clock.System.now().toEpochMilliseconds()
             db.studyResultQueries.insert(cardId, if (correct) 1 else 0, now)
+            syncTrigger.markDirty()
         }
     }
 }

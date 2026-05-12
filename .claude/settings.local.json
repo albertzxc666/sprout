@@ -19,7 +19,37 @@
       "PowerShell(Set-Location \"c:\\\\Users\\\\alber\\\\Desktop\\\\WEB-PROJECTS\\\\transcard-server\"; $env:PORT = \"3000\"; $p = Start-Process -FilePath node -ArgumentList \"dist/index.js\" -PassThru -RedirectStandardOutput \"smoke.log\" -RedirectStandardError \"smoke.err\" -NoNewWindow; $p.Id | Out-File -Encoding utf8 smoke.pid; \"Started node PID=$\\($p.Id\\)\"; Start-Sleep -Seconds 2; \"--- smoke.log ---\"; Get-Content smoke.log -ErrorAction SilentlyContinue; \"--- curl ---\"; curl.exe -s http://localhost:3000/healthz; \"`n--- stop ---\"; Stop-Process -Id $p.Id -Force; Remove-Item smoke.log,smoke.err,smoke.pid -ErrorAction SilentlyContinue; \"done\")",
       "Bash(findstr /i \"gradlew\")",
       "PowerShell(Set-Location \"c:\\\\Users\\\\alber\\\\Desktop\\\\WEB-PROJECTS\\\\transcard-server\"; \\(Get-Content package.json -Raw\\) -split \"`n\" | Select-String -Pattern 'prisma')",
-      "Bash(docker build *)"
+      "Bash(docker build *)",
+      "PowerShell(docker run --rm -d -p 3000:3000 --name transcard-server-test transcard-server:dev)",
+      "PowerShell(curl.exe -s http://localhost:3000/healthz)",
+      "PowerShell(docker stop transcard-server-test)",
+      "PowerShell(\"--- curl ---\")",
+      "PowerShell(\"`n--- logs ---\")",
+      "PowerShell(\"--- stop ---\")",
+      "Bash(docker compose *)",
+      "PowerShell(curl.exe -s -o NUL -w \"status=%{http_code} location=%{redirect_url}`n\" http://localhost/healthz)",
+      "PowerShell(curl.exe -k -s -w \"`nstatus=%{http_code}`n\" https://localhost/healthz)",
+      "PowerShell(\"--- curl http://localhost/healthz ---\")",
+      "PowerShell(\"--- curl -k https://localhost/healthz ---\")",
+      "PowerShell(Set-Location \"c:\\\\Users\\\\alber\\\\Desktop\\\\WEB-PROJECTS\\\\TransCard\"; git status; \"---\"; if \\(Test-Path \"docs\\\\superpowers\\\\plans\\\\2026-05-12-backend-skeleton-plan.md\"\\) { \\(Get-Item \"docs\\\\superpowers\\\\plans\\\\2026-05-12-backend-skeleton-plan.md\"\\).Length } else { \"MISSING\" })",
+      "Bash(git check-ignore *)",
+      "PowerShell(gh --version 2>&1)",
+      "PowerShell(gh auth status 2>&1)",
+      "PowerShell(\"---\")",
+      "PowerShell(curl.exe -s -o NUL -w \"status=%{http_code} location=%{redirect_url}`n\" --max-time 10 http://85.198.69.145/healthz)",
+      "PowerShell(curl.exe -k -s -w \"`nstatus=%{http_code} time=%{time_total}s`n\" --max-time 15 https://85.198.69.145/healthz)",
+      "PowerShell(\"--- HTTP redirect ---\")",
+      "PowerShell(\"--- HTTPS healthz ---\")",
+      "PowerShell(curl.exe -k -v --max-time 15 https://85.198.69.145/healthz 2>&1)",
+      "PowerShell(curl.exe -s -w \"`nstatus=%{http_code} time=%{time_total}s`n\" --max-time 10 http://85.198.69.145/healthz)",
+      "Bash(ls \"C:/Users/alber/.claude/projects/c--Users-alber-Desktop-WEB-PROJECTS-TransCard/memory/\" 2>&1)",
+      "Read(//c/Users/alber/.claude/projects/c--Users-alber-Desktop-WEB-PROJECTS-TransCard/**)",
+      "Bash(mkdir -p \"C:/Users/alber/.claude/projects/c--Users-alber-Desktop-WEB-PROJECTS-TransCard/memory\" && echo \"ok\")",
+      "PowerShell(Set-Location \"c:\\\\Users\\\\alber\\\\Desktop\\\\WEB-PROJECTS\\\\transcard-server\"; npm install \"prisma@^6\" 2>&1 | Select-Object -Last 3; \\(Get-Content package.json | Select-String 'prisma'\\))",
+      "Bash(npx prisma *)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\alber\\.claude\\projects\\c--Users-alber-Desktop-WEB-PROJECTS-TransCard"
     ]
   }
 }

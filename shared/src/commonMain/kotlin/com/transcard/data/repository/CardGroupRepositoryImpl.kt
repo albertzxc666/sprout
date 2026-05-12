@@ -2,6 +2,7 @@ package com.transcard.data.repository
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import com.transcard.data.sync.SyncTrigger
 import com.transcard.db.TransCardDatabase
 import com.transcard.domain.model.CardGroup
 import com.transcard.domain.repository.CardGroupRepository
@@ -14,6 +15,7 @@ import kotlinx.datetime.Clock
 
 class CardGroupRepositoryImpl(
     private val db: TransCardDatabase,
+    private val syncTrigger: SyncTrigger,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : CardGroupRepository {
 
@@ -27,21 +29,25 @@ class CardGroupRepositoryImpl(
 
     override suspend fun create(spaceId: Long, name: String): Long = withContext(dispatcher) {
         val now = Clock.System.now().toEpochMilliseconds()
-        db.transactionWithResult {
+        val id = db.transactionWithResult {
             db.cardGroupQueries.insert(spaceId, name, now)
             db.cardGroupQueries.lastInsertedId().executeAsOne()
         }
+        syncTrigger.markDirty()
+        id
     }
 
     override suspend fun rename(id: Long, name: String) {
         withContext(dispatcher) {
             db.cardGroupQueries.update(name, id)
+            syncTrigger.markDirty()
         }
     }
 
     override suspend fun delete(id: Long) {
         withContext(dispatcher) {
             db.cardGroupQueries.deleteById(id)
+            syncTrigger.markDirty()
         }
     }
 
