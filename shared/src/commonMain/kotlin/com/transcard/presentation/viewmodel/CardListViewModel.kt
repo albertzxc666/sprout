@@ -3,9 +3,11 @@ package com.transcard.presentation.viewmodel
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.transcard.domain.model.Card
+import com.transcard.domain.model.CardGroup
 import com.transcard.domain.model.Space
 import com.transcard.domain.model.SuggestionSource
 import com.transcard.domain.model.TranslationSuggestion
+import com.transcard.domain.repository.CardGroupRepository
 import com.transcard.domain.repository.CardRepository
 import com.transcard.domain.repository.SpaceRepository
 import com.transcard.domain.repository.TranslationRepository
@@ -26,17 +28,21 @@ data class SuggestionsState(
 )
 
 class CardListViewModel(
-    private val spaceId: Long,
+    private val groupId: Long,
     private val spaceRepository: SpaceRepository,
+    private val cardGroupRepository: CardGroupRepository,
     private val cardRepository: CardRepository,
     private val translationRepository: TranslationRepository
 ) : ScreenModel {
 
-    val cards: StateFlow<List<Card>> = cardRepository.getCardsBySpace(spaceId)
+    val cards: StateFlow<List<Card>> = cardRepository.getCardsByGroup(groupId)
         .stateIn(screenModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val _space = MutableStateFlow<Space?>(null)
     val space: StateFlow<Space?> = _space.asStateFlow()
+
+    private val _group = MutableStateFlow<CardGroup?>(null)
+    val group: StateFlow<CardGroup?> = _group.asStateFlow()
 
     private val nativeQuery = MutableStateFlow("")
     private val _suggestions = MutableStateFlow(SuggestionsState())
@@ -44,7 +50,9 @@ class CardListViewModel(
 
     init {
         screenModelScope.launch {
-            _space.value = spaceRepository.getById(spaceId)
+            val g = cardGroupRepository.getById(groupId)
+            _group.value = g
+            if (g != null) _space.value = spaceRepository.getById(g.spaceId)
         }
         observeQuery()
     }
@@ -100,9 +108,11 @@ class CardListViewModel(
 
     fun addCard(nativeWord: String, targetWord: String, hint: String?) {
         if (nativeWord.isBlank() || targetWord.isBlank()) return
+        val g = _group.value ?: return
         screenModelScope.launch {
             cardRepository.createCard(
-                spaceId = spaceId,
+                spaceId = g.spaceId,
+                groupId = g.id,
                 nativeWord = nativeWord.trim(),
                 targetWord = targetWord.trim(),
                 hint = hint?.trim()?.takeIf { it.isNotEmpty() }
