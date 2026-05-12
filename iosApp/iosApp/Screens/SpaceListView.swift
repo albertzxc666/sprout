@@ -172,7 +172,7 @@ private struct SpaceRow: View {
     }
 
     var body: some View {
-        NavigationLink(destination: CardListView(spaceId: item.space.id, title: item.space.name)) {
+        NavigationLink(destination: GroupListView(spaceId: item.space.id)) {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .center) {
                     LanguagePill(native: item.space.nativeLang, target: item.space.targetLang)
@@ -245,7 +245,7 @@ private struct SpaceRow: View {
             Text("\(percent)%")
                 .font(.subheadline.weight(.medium))
                 .foregroundColor(AppPalette.textSecondary)
-            NavigationLink(destination: StudySetupView(spaceId: item.space.id)) {
+            NavigationLink(destination: StudySetupView(scope: StudyScope.Space(spaceId: item.space.id))) {
                 Image(systemName: "play.fill")
                     .foregroundColor(.white)
                     .padding(10)
