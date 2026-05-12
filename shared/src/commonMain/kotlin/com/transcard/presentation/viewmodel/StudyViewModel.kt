@@ -6,6 +6,7 @@ import com.transcard.domain.model.Card
 import com.transcard.domain.model.GardenStage
 import com.transcard.domain.model.StudyDirection
 import com.transcard.domain.model.StudyMode
+import com.transcard.domain.model.StudyScope
 import com.transcard.domain.repository.CardRepository
 import com.transcard.domain.usecase.CheckAnswerUseCase
 import com.transcard.domain.usecase.ReviewCardUseCase
@@ -37,7 +38,7 @@ data class StudyState(
 }
 
 class StudyViewModel(
-    private val spaceId: Long,
+    val scope: StudyScope,
     val direction: StudyDirection,
     val mode: StudyMode,
     private val cardRepository: CardRepository,
@@ -54,16 +55,21 @@ class StudyViewModel(
 
     private fun loadCards() {
         screenModelScope.launch {
+            val now = Clock.System.now().toEpochMilliseconds()
             val cards = when (mode) {
-                StudyMode.SCHEDULED -> {
-                    val now = Clock.System.now().toEpochMilliseconds()
-                    cardRepository.getDueCardsBySpace(spaceId, now).first()
+                StudyMode.SCHEDULED -> when (val s = scope) {
+                    is StudyScope.Space -> cardRepository.getDueCardsBySpace(s.spaceId, now).first()
+                    is StudyScope.Group -> cardRepository.getDueCardsByGroup(s.groupId, now).first()
                 }
-                StudyMode.DRILL -> {
-                    cardRepository.getCardsBySpace(spaceId).first()
+                StudyMode.DRILL -> when (val s = scope) {
+                    is StudyScope.Space -> cardRepository.getCardsBySpace(s.spaceId).first()
+                    is StudyScope.Group -> cardRepository.getCardsByGroup(s.groupId).first()
                 }
             }.shuffled()
-            val total = cardRepository.countBySpace(spaceId).first()
+            val total = when (val s = scope) {
+                is StudyScope.Space -> cardRepository.countBySpace(s.spaceId).first()
+                is StudyScope.Group -> cardRepository.countByGroup(s.groupId).first()
+            }
             _state.value = StudyState(
                 cards = cards,
                 isLoading = false,
