@@ -11,6 +11,7 @@ data class Space(
 data class Card(
     val id: Long,
     val spaceId: Long,
+    val groupId: Long,
     val nativeWord: String,
     val targetWord: String,
     val hint: String? = null,
@@ -19,6 +20,18 @@ data class Card(
     val repetitions: Int = 0,
     val nextReviewAt: Long = 0L
 )
+
+data class CardGroup(
+    val id: Long,
+    val spaceId: Long,
+    val name: String,
+    val createdAt: Long
+)
+
+sealed class StudyScope {
+    data class Space(val spaceId: Long) : StudyScope()
+    data class Group(val groupId: Long) : StudyScope()
+}
 
 data class StudyResult(
     val cardId: Long,
