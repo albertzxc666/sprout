@@ -6,9 +6,12 @@ import com.transcard.di.initKoin as initKoinShared
 import com.transcard.domain.model.StudyDirection
 import com.transcard.domain.model.StudyMode
 import com.transcard.domain.model.StudyScope
+import com.transcard.presentation.viewmodel.AccountViewModel
 import com.transcard.presentation.viewmodel.CardListViewModel
 import com.transcard.presentation.viewmodel.GardenViewModel
 import com.transcard.presentation.viewmodel.GroupListViewModel
+import com.transcard.presentation.viewmodel.LoginViewModel
+import com.transcard.presentation.viewmodel.RegisterViewModel
 import com.transcard.presentation.viewmodel.SpaceListViewModel
 import com.transcard.presentation.viewmodel.StudyViewModel
 import org.koin.core.Koin
@@ -43,6 +46,10 @@ object KoinHelper {
         koin.get { parametersOf(spaceId) }
 
     fun getPreferences(): Preferences = koin.get()
+
+    fun getLoginViewModel(): LoginViewModel = koin.get()
+    fun getRegisterViewModel(): RegisterViewModel = koin.get()
+    fun getAccountViewModel(): AccountViewModel = koin.get()
 
     fun isYandexConfigured(): Boolean = koin.get<YandexDictionaryApi>().isConfigured
 }

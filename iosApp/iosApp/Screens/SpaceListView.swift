@@ -34,6 +34,13 @@ struct SpaceListView: View {
         }
         .navigationTitle("Мои пространства")
         .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                NavigationLink {
+                    AccountView()
+                } label: {
+                    Image(systemName: "person.circle")
+                }
+            }
             ToolbarItem(placement: .primaryAction) {
                 Button { showCreate = true } label: {
                     Label("Создать", systemImage: "plus")

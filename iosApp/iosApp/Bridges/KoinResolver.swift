@@ -34,4 +34,16 @@ enum DI {
     static func preferences() -> Preferences {
         return KoinHelper.shared.getPreferences()
     }
+
+    static func loginViewModel() -> LoginViewModel {
+        return KoinHelper.shared.getLoginViewModel()
+    }
+
+    static func registerViewModel() -> RegisterViewModel {
+        return KoinHelper.shared.getRegisterViewModel()
+    }
+
+    static func accountViewModel() -> AccountViewModel {
+        return KoinHelper.shared.getAccountViewModel()
+    }
 }
