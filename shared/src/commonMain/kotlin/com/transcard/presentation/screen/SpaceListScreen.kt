@@ -60,6 +60,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.transcard.domain.model.GardenStage
 import com.transcard.domain.model.LanguagePair
 import com.transcard.domain.model.Space
+import com.transcard.domain.model.StudyScope
 import com.transcard.presentation.components.AppCard
 import com.transcard.presentation.components.EmptyState
 import com.transcard.presentation.components.pressable
@@ -137,8 +138,8 @@ object SpaceListScreen : Screen {
                     items(home.spaces, key = { it.space.id }) { item ->
                         SpaceItem(
                             item = item,
-                            onOpen = { navigator.push(CardListScreen(item.space.id)) },
-                            onStudy = { navigator.push(StudySetupScreen(item.space.id)) },
+                            onOpen = { navigator.push(GroupListScreen(item.space.id)) },
+                            onStudy = { navigator.push(StudySetupScreen(StudyScope.Space(item.space.id))) },
                             onGarden = { navigator.push(GardenScreen(item.space.id)) },
                             onDelete = { spaceToDelete = item.space }
                         )
