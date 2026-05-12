@@ -12,8 +12,8 @@ final class CardListObservable: ObservableObject {
     private var cardsSub: FlowSubscription?
     private var suggSub: FlowSubscription?
 
-    init(spaceId: Int64) {
-        self.viewModel = DI.cardListViewModel(spaceId: spaceId)
+    init(groupId: Int64) {
+        self.viewModel = DI.cardListViewModel(groupId: groupId)
         cardsSub = FlowSubscription(flow: viewModel.cards) { [weak self] (list: [Card]) in
             self?.cards = list
         }
@@ -24,7 +24,7 @@ final class CardListObservable: ObservableObject {
 }
 
 struct CardListView: View {
-    let spaceId: Int64
+    let groupId: Int64
     let title: String
     @StateObject private var state: CardListObservable
 
@@ -32,10 +32,10 @@ struct CardListView: View {
     @State private var cardToEdit: Card?
     @State private var cardToDelete: Card?
 
-    init(spaceId: Int64, title: String) {
-        self.spaceId = spaceId
+    init(groupId: Int64, title: String) {
+        self.groupId = groupId
         self.title = title
-        _state = StateObject(wrappedValue: CardListObservable(spaceId: spaceId))
+        _state = StateObject(wrappedValue: CardListObservable(groupId: groupId))
     }
 
     var body: some View {
@@ -43,7 +43,7 @@ struct CardListView: View {
             AppPalette.background.ignoresSafeArea()
             VStack(spacing: 0) {
                 if !state.cards.isEmpty {
-                    NavigationLink(destination: StudySetupView(spaceId: spaceId)) {
+                    NavigationLink(destination: StudySetupView(scope: StudyScope.Group(groupId: groupId))) {
                         Text("Начать обучение")
                             .font(.headline)
                             .frame(maxWidth: .infinity)
@@ -116,6 +116,7 @@ struct CardListView: View {
                 onSave: { native, target, hint in
                     let updated = c.doCopy(
                         id: c.id, spaceId: c.spaceId,
+                        groupId: c.groupId,
                         nativeWord: native, targetWord: target,
                         hint: hint,
                         intervalDays: c.intervalDays,
