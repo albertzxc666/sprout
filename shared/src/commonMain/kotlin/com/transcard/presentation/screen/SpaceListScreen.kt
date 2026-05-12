@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Style
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -86,6 +87,11 @@ object SpaceListScreen : Screen {
             topBar = {
                 TopAppBar(
                     title = { Text("Мои пространства") },
+                    actions = {
+                        IconButton(onClick = { navigator.push(AccountScreen) }) {
+                            Icon(Icons.Outlined.AccountCircle, contentDescription = "Аккаунт")
+                        }
+                    },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.background
                     )

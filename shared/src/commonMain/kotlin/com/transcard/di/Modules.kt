@@ -28,9 +28,12 @@ import com.transcard.domain.usecase.CheckAnswerUseCase
 import com.transcard.domain.usecase.GetSpaceStatsUseCase
 import com.transcard.domain.usecase.GetStudyCardsUseCase
 import com.transcard.domain.usecase.ReviewCardUseCase
+import com.transcard.presentation.viewmodel.AccountViewModel
 import com.transcard.presentation.viewmodel.CardListViewModel
 import com.transcard.presentation.viewmodel.GardenViewModel
 import com.transcard.presentation.viewmodel.GroupListViewModel
+import com.transcard.presentation.viewmodel.LoginViewModel
+import com.transcard.presentation.viewmodel.RegisterViewModel
 import com.transcard.presentation.viewmodel.SpaceListViewModel
 import com.transcard.presentation.viewmodel.StudyViewModel
 import org.koin.core.context.startKoin
@@ -79,6 +82,10 @@ val sharedModule = module {
             get(), get(), get()
         )
     }
+
+    factory { LoginViewModel(get()) }
+    factory { RegisterViewModel(get()) }
+    factory { AccountViewModel(get(), get()) }
 }
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) =
