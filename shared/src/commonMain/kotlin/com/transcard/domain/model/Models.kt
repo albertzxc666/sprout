@@ -108,7 +108,8 @@ data class LanguagePair(
             LanguagePair("ja", "Японский"),
             LanguagePair("zh", "Китайский"),
             LanguagePair("pt", "Португальский"),
-            LanguagePair("tr", "Турецкий")
+            LanguagePair("tr", "Турецкий"),
+            LanguagePair("tt", "Татарский")
         )
     }
 }
