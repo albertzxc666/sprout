@@ -22,12 +22,23 @@ class CardRepositoryImpl(
         db.cardQueries.selectBySpace(spaceId).asFlow().mapToList(dispatcher)
             .map { rows -> rows.map { it.toDomain() } }
 
+    override fun getCardsByGroup(groupId: Long): Flow<List<Card>> =
+        db.cardQueries.selectByGroup(groupId).asFlow().mapToList(dispatcher)
+            .map { rows -> rows.map { it.toDomain() } }
+
     override fun getDueCardsBySpace(spaceId: Long, now: Long): Flow<List<Card>> =
         db.cardQueries.selectDueBySpace(spaceId, now).asFlow().mapToList(dispatcher)
             .map { rows -> rows.map { it.toDomain() } }
 
+    override fun getDueCardsByGroup(groupId: Long, now: Long): Flow<List<Card>> =
+        db.cardQueries.selectDueByGroup(groupId, now).asFlow().mapToList(dispatcher)
+            .map { rows -> rows.map { it.toDomain() } }
+
     override fun countBySpace(spaceId: Long): Flow<Int> =
         db.cardQueries.countBySpace(spaceId).asFlow().mapToOne(dispatcher).map { it.toInt() }
+
+    override fun countByGroup(groupId: Long): Flow<Int> =
+        db.cardQueries.countByGroup(groupId).asFlow().mapToOne(dispatcher).map { it.toInt() }
 
     override fun getCardCountsBySpace(): Flow<Map<Long, Int>> =
         db.cardQueries.countAllBySpace().asFlow().mapToList(dispatcher)
@@ -36,6 +47,14 @@ class CardRepositoryImpl(
     override fun getDueCountsBySpace(now: Long): Flow<Map<Long, Int>> =
         db.cardQueries.countDueAllBySpace(now).asFlow().mapToList(dispatcher)
             .map { rows -> rows.associate { it.spaceId to it.cnt.toInt() } }
+
+    override fun getCardCountsByGroup(spaceId: Long): Flow<Map<Long, Int>> =
+        db.cardQueries.countAllByGroupInSpace(spaceId).asFlow().mapToList(dispatcher)
+            .map { rows -> rows.associate { it.groupId to it.cnt.toInt() } }
+
+    override fun getDueCountsByGroup(spaceId: Long, now: Long): Flow<Map<Long, Int>> =
+        db.cardQueries.countDueAllByGroupInSpace(spaceId, now).asFlow().mapToList(dispatcher)
+            .map { rows -> rows.associate { it.groupId to it.cnt.toInt() } }
 
     override fun getGardenStagesBySpace(): Flow<Map<Long, Map<GardenStage, Int>>> {
         val stages = GardenStage.values()
@@ -48,14 +67,26 @@ class CardRepositoryImpl(
             }
     }
 
+    override fun getGardenStagesByGroup(spaceId: Long): Flow<Map<Long, Map<GardenStage, Int>>> {
+        val stages = GardenStage.values()
+        return db.cardQueries.selectGardenStagesByGroupInSpace(spaceId).asFlow().mapToList(dispatcher)
+            .map { rows ->
+                rows.groupBy { it.groupId }
+                    .mapValues { (_, groupRows) ->
+                        groupRows.associate { stages[it.stage.toInt()] to it.cnt.toInt() }
+                    }
+            }
+    }
+
     override suspend fun createCard(
         spaceId: Long,
+        groupId: Long,
         nativeWord: String,
         targetWord: String,
         hint: String?
     ) {
         withContext(dispatcher) {
-            db.cardQueries.insert(spaceId, nativeWord, targetWord, hint)
+            db.cardQueries.insert(spaceId, groupId, nativeWord, targetWord, hint)
         }
     }
 
@@ -86,6 +117,7 @@ class CardRepositoryImpl(
     private fun com.transcard.db.Card.toDomain() = Card(
         id = id,
         spaceId = spaceId,
+        groupId = groupId,
         nativeWord = nativeWord,
         targetWord = targetWord,
         hint = hint,
