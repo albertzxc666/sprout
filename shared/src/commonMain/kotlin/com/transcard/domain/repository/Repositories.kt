@@ -1,6 +1,7 @@
 package com.transcard.domain.repository
 
 import com.transcard.domain.model.Card
+import com.transcard.domain.model.CardGroup
 import com.transcard.domain.model.GardenStage
 import com.transcard.domain.model.Space
 import com.transcard.domain.model.StudyResult
@@ -15,14 +16,28 @@ interface SpaceRepository {
     suspend fun deleteSpace(id: Long)
 }
 
+interface CardGroupRepository {
+    fun observeBySpace(spaceId: Long): Flow<List<CardGroup>>
+    suspend fun getById(id: Long): CardGroup?
+    suspend fun create(spaceId: Long, name: String): Long
+    suspend fun rename(id: Long, name: String)
+    suspend fun delete(id: Long)
+}
+
 interface CardRepository {
     fun getCardsBySpace(spaceId: Long): Flow<List<Card>>
+    fun getCardsByGroup(groupId: Long): Flow<List<Card>>
     fun getDueCardsBySpace(spaceId: Long, now: Long): Flow<List<Card>>
+    fun getDueCardsByGroup(groupId: Long, now: Long): Flow<List<Card>>
     fun countBySpace(spaceId: Long): Flow<Int>
+    fun countByGroup(groupId: Long): Flow<Int>
     fun getCardCountsBySpace(): Flow<Map<Long, Int>>
     fun getDueCountsBySpace(now: Long): Flow<Map<Long, Int>>
+    fun getCardCountsByGroup(spaceId: Long): Flow<Map<Long, Int>>
+    fun getDueCountsByGroup(spaceId: Long, now: Long): Flow<Map<Long, Int>>
     fun getGardenStagesBySpace(): Flow<Map<Long, Map<GardenStage, Int>>>
-    suspend fun createCard(spaceId: Long, nativeWord: String, targetWord: String, hint: String?)
+    fun getGardenStagesByGroup(spaceId: Long): Flow<Map<Long, Map<GardenStage, Int>>>
+    suspend fun createCard(spaceId: Long, groupId: Long, nativeWord: String, targetWord: String, hint: String?)
     suspend fun updateCard(card: Card)
     suspend fun updateSrs(cardId: Long, intervalDays: Double, easiness: Double, repetitions: Int, nextReviewAt: Long)
     suspend fun deleteCard(id: Long)
