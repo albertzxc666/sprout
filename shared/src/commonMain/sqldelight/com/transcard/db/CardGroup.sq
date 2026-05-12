@@ -1,0 +1,41 @@
+CREATE TABLE CardGroup (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    spaceId INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    createdAt INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY (spaceId) REFERENCES Space(id) ON DELETE CASCADE
+);
+
+CREATE INDEX cardgroup_space_idx ON CardGroup(spaceId);
+
+selectBySpace:
+SELECT *
+FROM CardGroup
+WHERE spaceId = ?
+ORDER BY createdAt ASC, id ASC;
+
+selectById:
+SELECT *
+FROM CardGroup
+WHERE id = ?;
+
+insert:
+INSERT INTO CardGroup(spaceId, name, createdAt)
+VALUES (?, ?, ?);
+
+update:
+UPDATE CardGroup
+SET name = ?
+WHERE id = ?;
+
+deleteById:
+DELETE FROM CardGroup
+WHERE id = ?;
+
+countBySpace:
+SELECT COUNT(*)
+FROM CardGroup
+WHERE spaceId = ?;
+
+lastInsertedId:
+SELECT last_insert_rowid();
