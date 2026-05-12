@@ -159,6 +159,7 @@ sqldelight {
     databases {
         create("TransCardDatabase") {
             packageName.set("com.transcard.db")
+            verifyMigrations.set(true)
         }
     }
 }
