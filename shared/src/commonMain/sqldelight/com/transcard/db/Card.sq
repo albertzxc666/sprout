@@ -1,6 +1,7 @@
 CREATE TABLE Card (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     spaceId INTEGER NOT NULL,
+    groupId INTEGER NOT NULL,
     nativeWord TEXT NOT NULL,
     targetWord TEXT NOT NULL,
     hint TEXT,
@@ -8,16 +9,24 @@ CREATE TABLE Card (
     easiness REAL NOT NULL DEFAULT 2.5,
     repetitions INTEGER NOT NULL DEFAULT 0,
     nextReviewAt INTEGER NOT NULL DEFAULT 0,
-    FOREIGN KEY (spaceId) REFERENCES Space(id) ON DELETE CASCADE
+    FOREIGN KEY (spaceId) REFERENCES Space(id) ON DELETE CASCADE,
+    FOREIGN KEY (groupId) REFERENCES CardGroup(id) ON DELETE CASCADE
 );
 
 CREATE INDEX card_space_idx ON Card(spaceId);
 CREATE INDEX card_due_idx ON Card(spaceId, nextReviewAt);
+CREATE INDEX card_group_idx ON Card(groupId);
 
 selectBySpace:
 SELECT *
 FROM Card
 WHERE spaceId = ?
+ORDER BY id ASC;
+
+selectByGroup:
+SELECT *
+FROM Card
+WHERE groupId = ?
 ORDER BY id ASC;
 
 selectById:
@@ -31,21 +40,44 @@ FROM Card
 WHERE spaceId = ? AND nextReviewAt <= :now
 ORDER BY nextReviewAt ASC;
 
+selectDueByGroup:
+SELECT *
+FROM Card
+WHERE groupId = ? AND nextReviewAt <= :now
+ORDER BY nextReviewAt ASC;
+
 countBySpace:
 SELECT COUNT(*)
 FROM Card
 WHERE spaceId = ?;
+
+countByGroup:
+SELECT COUNT(*)
+FROM Card
+WHERE groupId = ?;
 
 countAllBySpace:
 SELECT spaceId, COUNT(*) AS cnt
 FROM Card
 GROUP BY spaceId;
 
+countAllByGroupInSpace:
+SELECT groupId, COUNT(*) AS cnt
+FROM Card
+WHERE spaceId = ?
+GROUP BY groupId;
+
 countDueAllBySpace:
 SELECT spaceId, COUNT(*) AS cnt
 FROM Card
 WHERE nextReviewAt <= :now
 GROUP BY spaceId;
+
+countDueAllByGroupInSpace:
+SELECT groupId, COUNT(*) AS cnt
+FROM Card
+WHERE spaceId = ? AND nextReviewAt <= :now
+GROUP BY groupId;
 
 countDueAll:
 SELECT COUNT(*)
@@ -65,9 +97,23 @@ SELECT spaceId,
 FROM Card
 GROUP BY spaceId, stage;
 
+selectGardenStagesByGroupInSpace:
+SELECT groupId,
+    CASE
+        WHEN repetitions < 1 THEN 0
+        WHEN repetitions < 3 THEN 1
+        WHEN repetitions < 5 THEN 2
+        WHEN repetitions < 8 THEN 3
+        ELSE 4
+    END AS stage,
+    COUNT(*) AS cnt
+FROM Card
+WHERE spaceId = ?
+GROUP BY groupId, stage;
+
 insert:
-INSERT INTO Card(spaceId, nativeWord, targetWord, hint)
-VALUES (?, ?, ?, ?);
+INSERT INTO Card(spaceId, groupId, nativeWord, targetWord, hint)
+VALUES (?, ?, ?, ?, ?);
 
 update:
 UPDATE Card
