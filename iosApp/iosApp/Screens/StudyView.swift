@@ -8,8 +8,8 @@ final class StudyObservable: ObservableObject {
     let viewModel: StudyViewModel
     private var subscription: FlowSubscription?
 
-    init(spaceId: Int64, direction: StudyDirection, mode: StudyMode) {
-        self.viewModel = DI.studyViewModel(spaceId: spaceId, direction: direction, mode: mode)
+    init(scope: StudyScope, direction: StudyDirection, mode: StudyMode) {
+        self.viewModel = DI.studyViewModel(scope: scope, direction: direction, mode: mode)
         subscription = FlowSubscription(flow: viewModel.state) { [weak self] (s: StudyState) in
             self?.state = s
         }
@@ -17,7 +17,7 @@ final class StudyObservable: ObservableObject {
 }
 
 struct StudyView: View {
-    let spaceId: Int64
+    let scope: StudyScope
     let direction: StudyDirection
     let mode: StudyMode
     @StateObject private var obs: StudyObservable
@@ -25,12 +25,12 @@ struct StudyView: View {
     @State private var tooltipVisible = false
     @State private var tooltipDismissed: Bool
 
-    init(spaceId: Int64, direction: StudyDirection, mode: StudyMode) {
-        self.spaceId = spaceId
+    init(scope: StudyScope, direction: StudyDirection, mode: StudyMode) {
+        self.scope = scope
         self.direction = direction
         self.mode = mode
         _obs = StateObject(wrappedValue: StudyObservable(
-            spaceId: spaceId, direction: direction, mode: mode
+            scope: scope, direction: direction, mode: mode
         ))
         _tooltipDismissed = State(initialValue: DI.preferences()
             .getBoolean(key: PrefKeys.shared.SRS_TOOLTIP_SEEN, default: false))
@@ -58,7 +58,7 @@ struct StudyView: View {
 
                 NavigationLink(
                     destination: StudyResultView(
-                        spaceId: spaceId,
+                        scope: scope,
                         direction: direction,
                         mode: mode,
                         correct: Int(s.correctCount),

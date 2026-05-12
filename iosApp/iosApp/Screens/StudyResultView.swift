@@ -2,7 +2,7 @@ import SwiftUI
 import Shared
 
 struct StudyResultView: View {
-    let spaceId: Int64
+    let scope: StudyScope
     let direction: StudyDirection
     let mode: StudyMode
     let correct: Int
@@ -45,7 +45,7 @@ struct StudyResultView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16))
 
                 NavigationLink {
-                    StudyView(spaceId: spaceId, direction: direction, mode: mode)
+                    StudyView(scope: scope, direction: direction, mode: mode)
                 } label: {
                     Text("Учить снова")
                         .frame(maxWidth: .infinity)

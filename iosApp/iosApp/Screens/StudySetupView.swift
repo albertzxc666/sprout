@@ -2,7 +2,7 @@ import SwiftUI
 import Shared
 
 struct StudySetupView: View {
-    let spaceId: Int64
+    let scope: StudyScope
     @State private var direction: StudyDirection = .nativeToTarget
     @State private var mode: StudyMode = .scheduled
     @State private var startNow = false
@@ -55,7 +55,7 @@ struct StudySetupView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16))
 
                 NavigationLink(
-                    destination: StudyView(spaceId: spaceId, direction: direction, mode: mode),
+                    destination: StudyView(scope: scope, direction: direction, mode: mode),
                     isActive: $startNow
                 ) { EmptyView() }
 
