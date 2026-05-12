@@ -52,6 +52,7 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.transcard.domain.model.Card as CardModel
+import com.transcard.domain.model.StudyScope
 import com.transcard.domain.model.SuggestionSource
 import com.transcard.domain.model.TranslationSuggestion
 import com.transcard.presentation.components.AppCard
@@ -59,14 +60,15 @@ import com.transcard.presentation.components.EmptyState
 import com.transcard.presentation.viewmodel.CardListViewModel
 import org.koin.core.parameter.parametersOf
 
-data class CardListScreen(val spaceId: Long) : Screen {
+data class CardListScreen(val groupId: Long) : Screen {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
-        val vm: CardListViewModel = koinScreenModel { parametersOf(spaceId) }
+        val vm: CardListViewModel = koinScreenModel { parametersOf(groupId) }
         val navigator = LocalNavigator.currentOrThrow
         val cards by vm.cards.collectAsState()
         val space by vm.space.collectAsState()
+        val group by vm.group.collectAsState()
 
         var showCreate by remember { mutableStateOf(false) }
         var cardToEdit by remember { mutableStateOf<CardModel?>(null) }
@@ -75,7 +77,18 @@ data class CardListScreen(val spaceId: Long) : Screen {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(space?.name ?: "Карточки") },
+                    title = {
+                        Column {
+                            Text(group?.name ?: "Карточки")
+                            space?.let { sp ->
+                                Text(
+                                    sp.name,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    },
                     navigationIcon = {
                         IconButton(onClick = { navigator.pop() }) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
@@ -106,7 +119,7 @@ data class CardListScreen(val spaceId: Long) : Screen {
             Column(Modifier.padding(padding).fillMaxSize()) {
                 if (cards.isNotEmpty()) {
                     Button(
-                        onClick = { navigator.push(StudySetupScreen(spaceId)) },
+                        onClick = { navigator.push(StudySetupScreen(StudyScope.Group(groupId))) },
                         modifier = Modifier.fillMaxWidth().padding(16.dp),
                         shape = MaterialTheme.shapes.medium
                     ) { Text("Начать обучение") }
