@@ -60,6 +60,11 @@ targets:
           - UIInterfaceOrientationPortraitUpsideDown
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
+        NSAppTransportSecurity:
+          NSExceptionDomains:
+            "85.198.69.145":
+              NSExceptionAllowsInsecureHTTPLoads: true
+              NSIncludesSubdomains: false
     preBuildScripts:
       - name: "Compile Kotlin Framework"
         script: |
