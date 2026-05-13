@@ -5,6 +5,20 @@ import Shared
 struct iOSApp: App {
     init() {
         KoinHelper.shared.start()
+        Self.wipeKeychainOnFreshInstall()
+    }
+
+    /// На iOS Keychain переживает удаление приложения, поэтому после переустановки
+    /// токены остаются и приложение автоматически «залогинивает» пользователя.
+    /// UserDefaults же удаляются вместе с приложением, поэтому используем их как маркер
+    /// первого запуска и чистим Keychain, если маркер не выставлен.
+    private static func wipeKeychainOnFreshInstall() {
+        let key = "transcard.hasLaunchedBefore"
+        let defaults = UserDefaults.standard
+        if !defaults.bool(forKey: key) {
+            KoinHelper.shared.clearTokens()
+            defaults.set(true, forKey: key)
+        }
     }
 
     var body: some Scene {

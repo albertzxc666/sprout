@@ -2,6 +2,7 @@ package com.transcard.ios
 
 import com.transcard.data.api.YandexDictionaryApi
 import com.transcard.data.preferences.Preferences
+import com.transcard.data.storage.TokenStorage
 import com.transcard.di.initKoin as initKoinShared
 import com.transcard.domain.model.StudyDirection
 import com.transcard.domain.model.StudyMode
@@ -47,6 +48,13 @@ object KoinHelper {
         koin.get { parametersOf(spaceId) }
 
     fun getPreferences(): Preferences = koin.get()
+
+    /**
+     * Чистит токены из Keychain. Нужно для случая «удалили приложение → переустановили»:
+     * на iOS Keychain переживает удаление приложения, поэтому свежий установ
+     * увидел бы старые токены и автоматически залогинился без ведома пользователя.
+     */
+    fun clearTokens() { koin.get<TokenStorage>().clear() }
 
     fun getLoginViewModel(): LoginViewModel = koin.get()
     fun getRegisterViewModel(): RegisterViewModel = koin.get()

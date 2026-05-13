@@ -3,7 +3,7 @@ import Shared
 
 @MainActor
 final class PostLoginRestoreObservable: ObservableObject {
-    @Published var state: PostLoginRestoreUiState
+    @Published var state: PostLoginRestoreUiState?
     let viewModel: PostLoginRestoreViewModel
     private var subscription: FlowSubscription?
     var onDone: (() -> Void)?
@@ -11,7 +11,7 @@ final class PostLoginRestoreObservable: ObservableObject {
     init() {
         let vm = DI.postLoginRestoreViewModel()
         self.viewModel = vm
-        self.state = PostLoginRestoreUiStateLoading()
+        self.state = nil
         subscription = FlowSubscription(flow: vm.state) { [weak self] (s: PostLoginRestoreUiState) in
             self?.state = s
             if s is PostLoginRestoreUiStateDone {
@@ -38,19 +38,23 @@ struct PostLoginRestoreView: View {
 
     @ViewBuilder
     private var content: some View {
-        switch state.state {
-        case is PostLoginRestoreUiStateLoading:
-            progressBlock("Проверяем данные на сервере…")
-        case is PostLoginRestoreUiStateRestoring:
-            progressBlock("Восстанавливаем…")
-        case is PostLoginRestoreUiStateLoggingOut:
-            progressBlock("Отмена…")
-        case let confirm as PostLoginRestoreUiStateConfirm:
-            restorePrompt(latest: confirm.latest)
-        case let err as PostLoginRestoreUiStateError:
-            errorOverlay(err)
-        default:
-            EmptyView()
+        if let s = state.state {
+            switch s {
+            case is PostLoginRestoreUiStateLoading:
+                progressBlock("Проверяем данные на сервере…")
+            case is PostLoginRestoreUiStateRestoring:
+                progressBlock("Восстанавливаем…")
+            case is PostLoginRestoreUiStateLoggingOut:
+                progressBlock("Отмена…")
+            case let confirm as PostLoginRestoreUiStateConfirm:
+                restorePrompt(latest: confirm.latest)
+            case let err as PostLoginRestoreUiStateError:
+                errorOverlay(err)
+            default:
+                EmptyView()
+            }
+        } else {
+            progressBlock("Загрузка…")
         }
     }
 

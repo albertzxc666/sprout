@@ -15,9 +15,12 @@ SELECT *
 FROM SyncState
 WHERE id = 1;
 
+-- pendingPush сюда НЕ ставим: на чистой сессии (login/autorelogin после переустановки)
+-- автоматический push пустой локалки затёр бы реальный snapshot пользователя на сервере.
+-- Push должен быть инициирован явно (Register → markDirty; PostLogin «Оставить локальные» → markDirty).
 setSession:
 UPDATE SyncState
-SET userId = ?, email = ?, pendingPush = 1, lastPushedAt = 0, lastPulledAt = 0, lastServerSnapshotAt = 0
+SET userId = ?, email = ?, lastPushedAt = 0, lastPulledAt = 0, lastServerSnapshotAt = 0
 WHERE id = 1;
 
 clearSession:

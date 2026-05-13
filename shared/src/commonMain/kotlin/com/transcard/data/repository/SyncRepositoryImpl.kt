@@ -60,6 +60,10 @@ class SyncRepositoryImpl(
 
     override fun observeStatus(): Flow<SyncStatus> = statusFlow.asStateFlow()
 
+    override fun markDirty() {
+        db.syncStateQueries.markDirty()
+    }
+
     override suspend fun pushNow(): Result<Unit> = runCatching { doPush(force = true) }
 
     override suspend fun pullOnStart(): Result<Unit> = runCatching {

@@ -85,7 +85,7 @@ val sharedModule = module {
     }
 
     factory { LoginViewModel(get()) }
-    factory { RegisterViewModel(get()) }
+    factory { RegisterViewModel(get(), get()) }
     factory { AccountViewModel(get(), get()) }
     factory { PostLoginRestoreViewModel(get(), get()) }
 }

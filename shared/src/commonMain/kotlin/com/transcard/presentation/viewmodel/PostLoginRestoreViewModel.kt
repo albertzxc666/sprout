@@ -55,9 +55,8 @@ class PostLoginRestoreViewModel(
                 .onSuccess { items ->
                     val latest = items.firstOrNull()
                     if (latest == null) {
-                        // На сервере пусто — локалка станет первым снапшотом сама
-                        // (pendingPush=1 уже выставился setSession в startAuthLoop).
-                        fireBackgroundPush()
+                        // На сервере пусто — пометим локалку dirty, debounced push отправит её первым snapshot'ом.
+                        syncRepository.markDirty()
                         _state.value = PostLoginRestoreUiState.Done
                     } else {
                         _state.value = PostLoginRestoreUiState.Confirm(latest)
@@ -90,13 +89,12 @@ class PostLoginRestoreViewModel(
     }
 
     /**
-     * «Оставить локальные». pendingPush уже =1 (выставился setSession при login),
-     * поэтому даже если push сейчас упадёт, pullOnStart при следующем запуске
-     * сначала ретрайнет push, а pull не сработает (SyncRepositoryImpl.pullOnStart).
-     * Fire-and-forget — UI закрываем сразу.
+     * «Оставить локальные». Ставим pendingPush=1 — debounced push pошлёт локалку,
+     * а если упадёт (offline), pullOnStart на следующем запуске сначала ретрайнет
+     * push и не молча затрёт локалку pull'ом (см. SyncRepositoryImpl.pullOnStart).
      */
     fun keepLocal() {
-        fireBackgroundPush()
+        syncRepository.markDirty()
         _state.value = PostLoginRestoreUiState.Done
     }
 
@@ -133,9 +131,4 @@ class PostLoginRestoreViewModel(
         else -> null
     }
 
-    private fun fireBackgroundPush() {
-        screenModelScope.launch {
-            runCatching { syncRepository.pushNow() }
-        }
-    }
 }

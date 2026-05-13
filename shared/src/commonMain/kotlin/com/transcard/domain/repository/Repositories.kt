@@ -73,6 +73,13 @@ interface SyncRepository {
     /** Hot Flow с текущим состоянием синхронизации. */
     fun observeStatus(): Flow<SyncStatus>
 
+    /**
+     * Помечает локальное состояние как «нужно запушить». Debounced push loop
+     * подхватит флаг и пушнёт через ~5 сек. Если pullOnStart запустится раньше,
+     * он сначала ретрайнет push (а не молча перезапишет локалку pull'ом).
+     */
+    fun markDirty()
+
     /** Принудительный push snapshot'а (без debounce). Возвращает успех/ошибку. */
     suspend fun pushNow(): Result<Unit>
 
