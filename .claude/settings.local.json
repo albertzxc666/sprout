@@ -46,7 +46,8 @@
       "Read(//c/Users/alber/.claude/projects/c--Users-alber-Desktop-WEB-PROJECTS-TransCard/**)",
       "Bash(mkdir -p \"C:/Users/alber/.claude/projects/c--Users-alber-Desktop-WEB-PROJECTS-TransCard/memory\" && echo \"ok\")",
       "PowerShell(Set-Location \"c:\\\\Users\\\\alber\\\\Desktop\\\\WEB-PROJECTS\\\\transcard-server\"; npm install \"prisma@^6\" 2>&1 | Select-Object -Last 3; \\(Get-Content package.json | Select-String 'prisma'\\))",
-      "Bash(npx prisma *)"
+      "Bash(npx prisma *)",
+      "Bash(command -v gradle)"
     ],
     "additionalDirectories": [
       "C:\\Users\\alber\\.claude\\projects\\c--Users-alber-Desktop-WEB-PROJECTS-TransCard"

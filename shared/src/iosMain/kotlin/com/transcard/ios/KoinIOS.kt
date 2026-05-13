@@ -11,6 +11,7 @@ import com.transcard.presentation.viewmodel.CardListViewModel
 import com.transcard.presentation.viewmodel.GardenViewModel
 import com.transcard.presentation.viewmodel.GroupListViewModel
 import com.transcard.presentation.viewmodel.LoginViewModel
+import com.transcard.presentation.viewmodel.PostLoginRestoreViewModel
 import com.transcard.presentation.viewmodel.RegisterViewModel
 import com.transcard.presentation.viewmodel.SpaceListViewModel
 import com.transcard.presentation.viewmodel.StudyViewModel
@@ -50,6 +51,7 @@ object KoinHelper {
     fun getLoginViewModel(): LoginViewModel = koin.get()
     fun getRegisterViewModel(): RegisterViewModel = koin.get()
     fun getAccountViewModel(): AccountViewModel = koin.get()
+    fun getPostLoginRestoreViewModel(): PostLoginRestoreViewModel = koin.get()
 
     fun isYandexConfigured(): Boolean = koin.get<YandexDictionaryApi>().isConfigured
 }

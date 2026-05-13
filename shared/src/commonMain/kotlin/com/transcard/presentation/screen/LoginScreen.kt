@@ -44,7 +44,7 @@ object LoginScreen : Screen {
         val navigator = LocalNavigator.currentOrThrow
 
         LaunchedEffect(state.success) {
-            if (state.success) navigator.pop()
+            if (state.success) navigator.replace(PostLoginRestoreScreen)
         }
 
         Scaffold(

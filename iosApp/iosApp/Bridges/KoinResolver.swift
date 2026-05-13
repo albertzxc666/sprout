@@ -46,4 +46,8 @@ enum DI {
     static func accountViewModel() -> AccountViewModel {
         return KoinHelper.shared.getAccountViewModel()
     }
+
+    static func postLoginRestoreViewModel() -> PostLoginRestoreViewModel {
+        return KoinHelper.shared.getPostLoginRestoreViewModel()
+    }
 }

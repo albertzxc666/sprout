@@ -33,6 +33,7 @@ import com.transcard.presentation.viewmodel.CardListViewModel
 import com.transcard.presentation.viewmodel.GardenViewModel
 import com.transcard.presentation.viewmodel.GroupListViewModel
 import com.transcard.presentation.viewmodel.LoginViewModel
+import com.transcard.presentation.viewmodel.PostLoginRestoreViewModel
 import com.transcard.presentation.viewmodel.RegisterViewModel
 import com.transcard.presentation.viewmodel.SpaceListViewModel
 import com.transcard.presentation.viewmodel.StudyViewModel
@@ -86,6 +87,7 @@ val sharedModule = module {
     factory { LoginViewModel(get()) }
     factory { RegisterViewModel(get()) }
     factory { AccountViewModel(get(), get()) }
+    factory { PostLoginRestoreViewModel(get(), get()) }
 }
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) =

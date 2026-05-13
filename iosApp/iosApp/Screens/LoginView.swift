@@ -6,7 +6,6 @@ final class LoginObservable: ObservableObject {
     @Published var state: AuthFormState
     let viewModel: LoginViewModel
     private var subscription: FlowSubscription?
-    var onSuccess: (() -> Void)?
 
     init() {
         let vm = DI.loginViewModel()
@@ -14,16 +13,24 @@ final class LoginObservable: ObservableObject {
         self.state = AuthFormState(email: "", password: "", isLoading: false, error: nil, success: false)
         subscription = FlowSubscription(flow: vm.state) { [weak self] (s: AuthFormState) in
             self?.state = s
-            if s.success { self?.onSuccess?() }
         }
     }
 }
 
 struct LoginView: View {
     @StateObject private var state = LoginObservable()
-    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
+        Group {
+            if state.state.success {
+                PostLoginRestoreView()
+            } else {
+                loginForm
+            }
+        }
+    }
+
+    private var loginForm: some View {
         Form {
             Section {
                 Text("Войдите, чтобы восстановить свои карточки и держать их синхронизированными между устройствами.")
@@ -62,8 +69,5 @@ struct LoginView: View {
         }
         .navigationTitle("Вход")
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            state.onSuccess = { dismiss() }
-        }
     }
 }
